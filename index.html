@@ -1,0 +1,360 @@
+<html>
+<head>
+  <title>Habit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://necolas.github.io/normalize.css/3.0.2/normalize.css"/>
+
+<link rel="stylesheet" href="habits.css"/>
+
+</head>
+<body>
+<main>
+
+<a class="form-btn" id="expand-habit-form">Develop a Healthy Habit</a>
+
+<div class="form-wrapper">
+<form name="habit" id="habit-form" class="hidden">
+  <fieldset>
+    <label for="title">I want to</label>
+    <input type="text" name="title" autocomplete="off" maxlength="30" placeholder="get up and stretch"/>
+  </fieldset>
+  <fieldset>
+    <label for="freq">every</label>
+    <input type="number" name="freq" placeholder="10" class="small"/> 
+    <input type="radio" value="days" name="freqType">days
+    <input type="radio" value="hours" name="freqType">hrs
+    <input type="radio" value="minutes" name="freqType" checked>mins
+  </fieldset>
+  <fieldset>
+    <a id="close-form" class="form-btn">Cancel</a>
+    <a id="submit-habit-form" class="form-btn disabled">Add Habit</a>
+  </fieldset>
+</form>
+</div>
+
+<div id="root" class="noselect"></div>
+<div id="reactRoot" class="noselect"></div>
+
+</main>
+
+<script src="thirdparty/es5-shim.min.js"></script>
+<script src="thirdparty/es5-sham.min.js"></script>
+<script src="thirdparty/console-polyfill.js"></script>
+<script src="thirdparty/react.js"></script>
+<script src="thirdparty/JSXTransformer.js"></script>
+
+<script src="utils/U.js"></script>
+<script src="utils/PubSub.js"></script>
+
+<!-- Habits --> 
+<script src="stores/HabitStore.js"></script>
+<script src="components/HabitActionMenu.js" type="text/jsx"></script>
+<script src="components/Habit.js" type="text/jsx"></script>
+<script src="components/NewHabitForm.js" type="text/jsx"></script>
+
+<!-- Messages --> 
+<script src="stores/MessageStore.js"></script>
+<script src="components/Messages.js" type="text/jsx"></script>
+
+<script src="components/HabitApp.js" type="text/jsx"></script>
+
+<script>
+
+  var root = document.getElementById('root');
+  var habits = [];
+  var resetFormBtn = document.getElementById('reset-form');
+
+  var expandFormBtn = document.getElementById('expand-habit-form'),
+      cancelFormBtn = document.getElementById('close-form'),
+      habitForm = document.getElementById('habit-form');
+
+  expandFormBtn.addEventListener('click', function() {
+    showForm();
+    document.querySelector('input[type=text]:first-of-type').focus();
+
+  }, false); 
+  cancelFormBtn.addEventListener('click', hideForm, false);
+
+  function show(el) {
+    el.classList.remove('hidden');
+  }
+
+  function hide(el) {
+    el.classList.add('hidden');
+  }
+
+  function showForm() {
+    show(document.getElementById('habit-form'));
+    hide(expandFormBtn);
+  }
+
+  function hideForm() {
+    hide(document.getElementById('habit-form'));
+    show(expandFormBtn);
+  }
+
+  function onHabitFormInit() {
+    document.habit.title.focus();
+  }
+
+  onHabitFormInit();
+
+  function habitFormValid() {
+    var title = document.habit.title.value,
+        freq = document.habit.freq.value; 
+
+    return (title.length && freq > 0);
+  }
+
+  function onHabitFormSubmit() {
+    var title = document.habit.title.value; 
+    var freqTypes = {
+      'days' : 86400, // seconds in a day
+      'hours' : 3600,
+      'minutes': 60
+    };
+    var freq = document.habit.freq.value * freqTypes[document.habit.freqType.value];
+
+    if (title.length && typeof freq == 'number') {
+      newHabit(document.habit.title.value, 1000 * freq, undefined, undefined, document.habit.freqType.value);
+      resetHabitForm();
+    }
+  }
+
+  function resetHabitForm() {
+    document.habit.title.value = '';
+    document.getElementById('submit-habit-form').classList.add('disabled');
+    //document.habit.title.focus();
+  }
+
+  function updateHabit(title, fn) {
+    for (var i=0, l=habits.length; i<l; i++) {
+      if (habits[i].title === title) {
+        habits[i] = fn(habits[i]);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  var submit = document.getElementById('submit-habit-form');
+  onEvent('keyup', 'input', function() {
+    if (habitFormValid()) {
+      submit.classList.remove('disabled');
+    } else {
+      submit.classList.add('disabled');
+    }
+  });
+
+  function deleteHabit(id) {
+    habits = habits.filter(function(h) {
+      //console.log(h.id, id);
+      return h.id != id;
+    });
+    save();
+  }
+
+  onEvent('click', '#root', function(ev) {
+    var target = event.target;
+    var title = target.innerHTML;
+    var habit = habits.filter(function(h) {
+      return parseFloat(h.id) == parseFloat(target.dataset.habitId);
+    })[0];
+
+    var isDeleteBtn = (target.className.indexOf('delete') != -1);
+    var isHabitWrapper = (target.className.indexOf('habit') != -1);
+
+    if (isDeleteBtn) {
+      deleteHabit(habit.id);
+      target.parentElement.remove();
+      return; 
+    }
+
+    if (isHabitWrapper) {
+      updateHabit(habit.title, function(habit) {
+        habit.totalTaps+= 1;
+        habit.lastTap = (new Date).getTime();
+        save();
+        return habit;
+      });
+    }
+  });
+
+  onEvent('click', '#submit-habit-form', onHabitFormSubmit);
+
+  function toArray(nodeList) {
+    return [].slice.call(nodeList);
+  }
+
+  function onEvent(eventType, selector, fn) {
+    var elems = toArray(document.querySelectorAll(selector));
+    elems.forEach(function(node) {
+      node.addEventListener(eventType, fn, false); 
+    });
+  }
+
+  function div(className) {
+    var div = document.createElement('div');
+    div.className = className;
+    return div;
+  }
+
+  function text(elem, content) {
+    var prop = 'innerText' in elem ? 'innerText' : 'textContent';
+    elem[prop] = content;
+    return content;
+  }
+
+  /**
+  * @desc Check if a child object has all the properties
+  * of its parent and that the properties are the same. The child
+  * may have more but not fewer properties.
+  */
+  function isSuperset(childObj, parentObj) {
+    for (var key in parentObj) {
+      if (childObj[key] === undefined || parentObj[key] != childObj[key]) {
+        return false;
+      }
+    }
+    return true; 
+  }
+
+  function habitElem(title, uniqID) {
+    var wrapper = div('habit');
+    wrapper.dataset.habitId = uniqID; 
+
+    var progress = div('progress');
+    var titleEl = div('habit-title');
+    titleEl.dataset.habitId = uniqID; 
+
+    var total = div('habit-total');
+
+    var close = document.createElement('a');
+    close.dataset.habitId = uniqID; 
+
+    close.className = 'delete';
+    close.innerHTML = '&#8594;'; 
+
+    text(total, 0);
+
+    text(titleEl, title);
+
+    wrapper.appendChild(progress);
+    wrapper.appendChild(titleEl); 
+    wrapper.appendChild(total);
+    wrapper.appendChild(close);
+
+    return wrapper;
+  }
+
+  function abbrev(str, limit) {
+    if (str.length > limit) {
+      str = str.slice(0, limit -3) + '...';
+    }
+    return str;
+  }
+
+  function timeDiff(habits) {
+    var now = (new Date).getTime(); 
+
+    habits.forEach(function(habit) {
+      var msPassed = now - habit.lastTap,
+          msLeft = msPassed / habit.freq;
+
+      //console.log(msPassed + ' / ' + habit.freq);
+
+      var timeLeftAsPercentage = (100 - ((msPassed / habit.freq) * 100)).toFixed(3);
+      if (timeLeftAsPercentage < 0) {
+        timeLeftAsPercentage = 0;
+        habit.totalTaps = 0;
+        save();
+      }
+
+      habit.elem.querySelector('.habit-total').innerHTML = habit.totalTaps;
+      habit.elem.querySelector('.progress').style.width = timeLeftAsPercentage + '%';
+
+      //habit.elem.innerHTML = timeLeftAsPercentage;
+    });
+  }
+
+  
+  setTimeout(function updateHabits() {
+    timeDiff(habits);
+    setTimeout(updateHabits, 1000);
+  }, 1000);
+
+  function save() {
+    localStorage.setItem('habits', JSON.stringify(habits));
+  }
+
+  function load() {
+    /*
+    var stored = localStorage.getItem('habits'); 
+    var key;
+    var now = (new Date).getTime();
+
+    if (stored) {
+      JSON.parse(stored).sort(function(a, b) {
+        var age1 = (a.lastTap - now) / a.freq, 
+            age2 = (b.lastTap - now) / b.freq;
+
+        if (age1 > age2) {
+          return 1;
+        } else if (age2 > age1) {
+          return -1;
+        }
+        return 0;
+      }).forEach(function(habit) {
+        newHabit(habit.title, habit.freq, habit.lastTap, habit.totalTaps);
+      });
+    }
+    */
+  }
+
+  load();
+
+  function newHabit(title, freq, lastTap, totalTaps, freqType) {
+    var now = (new Date).getTime();
+    lastTap = (typeof lastTap === 'number') ? lastTap : now;
+    totalTaps = (typeof totalTaps === 'number') ? totalTaps : 0;
+
+    var uniqID = (new Date).getTime() + Math.random() * 1000;
+
+    var habit = {
+      id: uniqID,
+      level: 1,
+      elem: habitElem(title, uniqID),
+      title: abbrev(title, 30),
+      freq: freq,
+      freqType: freqType,
+      lastTap: lastTap,
+      totalTaps: totalTaps
+    };
+
+    habits.push(habit);
+
+    PubSub.publish('habitAdded', habit); 
+
+    save();
+
+    //show(resetFormBtn); 
+    return habit;
+  }
+
+  function tapHabit(title) {
+    var habit = habits.filter(function(h) {
+      return h.title === title;
+    });
+
+    if (habit[0]) {
+      habit[0].lastTap = (new Date).getTime();
+      save();
+      return true; 
+    }
+    return false; 
+  }
+//})();
+</script>
+
+</body>
+</html>
