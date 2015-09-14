@@ -57,6 +57,7 @@
 
     updateHabits({id: habit.id}, function(habit) {
       newLevel = ++habit.level;
+      saveHabits();
       PubSub.publish('habitsListChanged', habits);
       return habit;
     });
@@ -90,6 +91,7 @@
       }
       return result || h; 
     });
+    saveHabits();
     PubSub.publish('habitListChanged', habits); 
     return updated; 
   }
@@ -116,6 +118,7 @@
           3000); 
       }
 
+      saveHabits();
       PubSub.publish('habitListChanged', habits);
       return habit; 
     });
