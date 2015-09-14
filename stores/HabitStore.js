@@ -3,12 +3,19 @@
 
   // TODO: Move this into its own file
   var DB = exports.DB =  {
+    /** 
+    * @returns {boolean}
+    */
     save: function(key, value) {
       if (!localStorage) {
         return false; 
       }
-      return localStorage.setItem(key, JSON.stringify(value)); 
+      localStorage.setItem(key, JSON.stringify(value));
+      return this.get(key) !== false;  
     }, 
+    /**
+    * @returns {object|boolean}
+    */
     get: function(key) {
       var item = localStorage.getItem(key); 
       if (!item) {

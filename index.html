@@ -10,20 +10,20 @@
 <body>
 <main>
 
-<a class="form-btn" id="expand-habit-form">Develop a Healthy Habit</a>
+<a class="form-btn" id="expand-habit-form">Develop a Positive Habit</a>
 
 <div class="form-wrapper">
 <form name="habit" id="habit-form" class="hidden">
   <fieldset>
     <label for="title">I want to</label>
-    <input type="text" name="title" autocomplete="off" maxlength="30" placeholder="get up and stretch"/>
+    <input type="text" name="title" autocomplete="off" maxlength="30" placeholder="exercise"/>
   </fieldset>
   <fieldset>
     <label for="freq">every</label>
-    <input type="number" name="freq" placeholder="10" class="small"/> 
-    <input type="radio" value="days" name="freqType">days
+    <input type="number" name="freq" placeholder="2" class="small"/> 
+    <input type="radio" value="days" name="freqType" checked>days
     <input type="radio" value="hours" name="freqType">hrs
-    <input type="radio" value="minutes" name="freqType" checked>mins
+    <input type="radio" value="minutes" name="freqType">mins
   </fieldset>
   <fieldset>
     <a id="close-form" class="form-btn">Cancel</a>
@@ -59,6 +59,11 @@
 <script src="components/HabitApp.js" type="text/jsx"></script>
 
 <script>
+
+/** 
+* @todo Create React component for the form. The non-React code below is 
+* extremely messy. 
+*/
 
   var root = document.getElementById('root');
   var habits = [];
@@ -124,7 +129,6 @@
   function resetHabitForm() {
     document.habit.title.value = '';
     document.getElementById('submit-habit-form').classList.add('disabled');
-    //document.habit.title.focus();
   }
 
   function updateHabit(title, fn) {
@@ -151,7 +155,6 @@
       //console.log(h.id, id);
       return h.id != id;
     });
-    save();
   }
 
   onEvent('click', '#root', function(ev) {
@@ -174,7 +177,6 @@
       updateHabit(habit.title, function(habit) {
         habit.totalTaps+= 1;
         habit.lastTap = (new Date).getTime();
-        save();
         return habit;
       });
     }
@@ -267,7 +269,6 @@
       if (timeLeftAsPercentage < 0) {
         timeLeftAsPercentage = 0;
         habit.totalTaps = 0;
-        save();
       }
 
       habit.elem.querySelector('.habit-total').innerHTML = habit.totalTaps;
@@ -282,10 +283,6 @@
     timeDiff(habits);
     setTimeout(updateHabits, 1000);
   }, 1000);
-
-  function save() {
-    localStorage.setItem('habits', JSON.stringify(habits));
-  }
 
   function load() {
     /*
@@ -311,8 +308,6 @@
     */
   }
 
-  load();
-
   function newHabit(title, freq, lastTap, totalTaps, freqType) {
     var now = (new Date).getTime();
     lastTap = (typeof lastTap === 'number') ? lastTap : now;
@@ -335,8 +330,6 @@
 
     PubSub.publish('habitAdded', habit); 
 
-    save();
-
     //show(resetFormBtn); 
     return habit;
   }
@@ -348,7 +341,6 @@
 
     if (habit[0]) {
       habit[0].lastTap = (new Date).getTime();
-      save();
       return true; 
     }
     return false; 
