@@ -1,10 +1,23 @@
 @import url(https://fonts.googleapis.com/css?family=Maven+Pro);
 
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
 body, html {
   font-family: 'Maven Pro', sans-serif;
 }
 fieldset {
   border: none;
+}
+
+.loading {
+  width: 1.5em;
+  position: relative;
+  top: 2.5em;
+  left: 1em;
 }
 
 .messages-wrapper {
@@ -15,18 +28,19 @@ fieldset {
     z-index: 3;
     transition: all ease .5s;
     max-width: 40em;
-    width: 100%;
-    height: 1em;
+    width: 90%;
     overflow: hidden;
-    padding: 2.5em 1em;
+    padding: 2em 1em;
     color: #000;
     font-size: 1em;
     border-top: solid #5E9DC8 2px;
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
 
 .messages-show {
-  bottom: -1em;
+  bottom: 0em;
 }
 
 .messages-wrapper li {
@@ -171,6 +185,16 @@ form, input {
 
 .link-success {
   color: #5E9DC8;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .habit {

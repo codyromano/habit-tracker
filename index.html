@@ -33,10 +33,11 @@
 </div>
 
 <div id="root" class="noselect"></div>
-<div id="reactRoot" class="noselect"></div>
+<div id="reactRoot" class="noselect"><img src="images/loading.gif" class="loading"/></div>
 
 </main>
 
+<script src="thirdparty/fastclick.js"></script>
 <script src="thirdparty/es5-shim.min.js"></script>
 <script src="thirdparty/es5-sham.min.js"></script>
 <script src="thirdparty/console-polyfill.js"></script>
@@ -59,6 +60,8 @@
 <script src="components/HabitApp.js" type="text/jsx"></script>
 
 <script>
+var attachFastClick = Origami.fastclick;
+attachFastClick(document.body);
 
 /** 
 * @todo Create React component for the form. The non-React code below is 
