@@ -28,7 +28,7 @@ fieldset {
     z-index: 3;
     transition: all ease .5s;
     max-width: 40em;
-    width: 90%;
+    width: 100%;
     overflow: hidden;
     padding: 2em 1em;
     color: #000;
@@ -99,7 +99,7 @@ main {
   max-width: 70em;
   width: 99%;
   max-width: 40em;
-  margin: 0em auto;
+  margin: 0em auto 5em auto;
 }
 
 input[type=radio] {
@@ -131,6 +131,7 @@ form {
 }
 
 .form-wrapper {
+  margin-bottom: 1em;
   background: #eee;
 }
 

@@ -3,6 +3,23 @@
 
   var U = exports.U = {}; // Utilities
 
+U.sortByProp = function(objA, objB, prop, order) {
+  var valA = objA[prop],
+      valB = objB[prop];
+
+  if (valA === valB) { return 0; }
+
+  switch (order) {
+    case 'ascend': 
+      return (valA > valB) ? -1 : 1; 
+    break;
+    default: 
+      // Descending order by default
+      return (valA > valB) ? 1 : -1; 
+    break;
+  }
+};
+
   U.convertMs = function(ms, outputFormat) {
     var time; 
     switch (outputFormat) {
