@@ -70,7 +70,7 @@
     var index = 0, habit; 
 
     while ((habit = habits[index])) {
-      if (isSuperset(habit, queryObj)) {
+      if (U.isSuperset(habit, queryObj)) {
         return index;
       }
       habits++;
@@ -85,7 +85,7 @@
     var updated = []; 
     habits = habits.map(function(h) {
       var result;
-      if (isSuperset(h, queryObj)) {
+      if (U.isSuperset(h, queryObj)) {
         result = fn(h); 
         updated.push(result); 
       }

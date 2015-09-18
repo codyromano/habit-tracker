@@ -32,7 +32,7 @@
     },
     render: function() {
       var habits = this.state.habits.sort(sortHabits).map(function(h) {
-        return <Habit title={h.title} freq={h.freq} level={h.level} 
+        return <Habit key={h.id} title={h.title} freq={h.freq} level={h.level} 
           totalTaps={h.totalTaps} lastTap={h.lastTap}/>;
       });
 

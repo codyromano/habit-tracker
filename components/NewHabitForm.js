@@ -23,7 +23,7 @@
 
     componentDidMount: function() {
       var submit = this.refs.submit.getDOMNode();
-      submit.addEventListener('click', this.onFormSubmit.bind(this), false);
+      submit.addEventListener('click', this.onFormSubmit, false);
     },
 
     onFormUpdated: function(ev) {
@@ -101,7 +101,7 @@
 
       var freqTypes = ['days','hours','minutes'].map(function(type) {
         var checked = (type === _self.state.freqType);
-        return <span><input type="radio" ref="freqType" defaultChecked={checked}
+        return <span key={type}><input type="radio" ref="freqType" defaultChecked={checked}
         value={type} name="freqType"/>{type}</span>;
       });
 
@@ -116,12 +116,12 @@
           id="habit-form" className={formClasses}>
             <fieldset>
               <label htmlFor="title">I want to</label>
-              <input type="text" ref="title" value={this.state.title} name="title" autoComplete="off" maxLength="30" 
+              <input type="text" ref="title" defaultValue={this.state.title} name="title" autoComplete="off" maxLength="30" 
               placeholder="exercise"/>
             </fieldset>
             <fieldset>
               <label htmlFor="freq">every</label>
-              <input type="number" ref="freq" name="freq" value={this.state.freq} placeholder="2" className="small"/>
+              <input type="number" ref="freq" name="freq" defaultValue={this.state.freq} placeholder="2" className="small"/>
               {freqTypes}
             </fieldset>
             <fieldset>

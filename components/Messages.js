@@ -6,8 +6,8 @@
   var Messages = exports.Messages = React.createClass({
     render: function() {
       var _self = this;
-      var listItems = this.props.queue.map(function(el) {
-        return <li>{el.content}</li>;
+      var listItems = this.props.queue.map(function(el, i) {
+        return <li key={i}>{el.content}</li>;
       });
       var classes = U.getClassStr({
         'messages-wrapper' : true, 
