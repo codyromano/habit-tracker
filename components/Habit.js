@@ -34,7 +34,7 @@
 
       if (timeLeftAsPercentage > 25 && timeLeftAsPercentage < 50 && !this.state.warned) {
         this.setState({warned: true}); 
-        PubSub.publish('messageAdded', "Warning: You need to" + this.props.title + 
+        PubSub.publish('messageAdded', "Warning: You need to " + this.props.title + 
           " ASAP or you'll be demoted to a lower level.", 4000); 
       }
     },

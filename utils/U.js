@@ -2,23 +2,57 @@
   'use strict';
 
   var U = exports.U = {}; // Utilities
+ 
+  /**
+  * @desc Check if a child object has all the properties
+  * of its parent and that the properties are the same. The child
+  * may have more but not fewer properties.
+  */
+  U.isSuperset = function(childObj, parentObj) {
+    for (var key in parentObj) {
+      if (childObj[key] === undefined || parentObj[key] != childObj[key]) {
+        return false;
+      }
+    }
+    return true; 
+  };
 
-U.sortByProp = function(objA, objB, prop, order) {
-  var valA = objA[prop],
-      valB = objB[prop];
+  /**
+  * @desc Generates a unique enough, auto-incrementing number
+  * @returns {Integer}
+  */
+  U.unique = (function() {
+    var autoIncrement = 0;
+    return function() { 
+      var rand = Math.round(Math.random() * Math.pow(1000, 2));
+      return [++autoIncrement, rand, new Date().getTime()].join(''); 
+    };
+  })();
 
-  if (valA === valB) { return 0; }
+  U.sortByProp = function(objA, objB, prop, order) {
+    var valA = objA[prop],
+        valB = objB[prop];
 
-  switch (order) {
-    case 'ascend': 
-      return (valA > valB) ? -1 : 1; 
-    break;
-    default: 
-      // Descending order by default
-      return (valA > valB) ? 1 : -1; 
-    break;
-  }
-};
+    if (valA === valB) { return 0; }
+
+    switch (order) {
+      case 'ascend': 
+        return (valA > valB) ? -1 : 1; 
+      break;
+      default: 
+        // Descending order by default
+        return (valA > valB) ? 1 : -1; 
+      break;
+    }
+  };
+
+  U.abbrev = function(str, limit) {
+    if (typeof str !== 'string') { return; }
+    if (str.length > limit) {
+      str = str.slice(0, limit -3) + '...';
+    }
+    return str;
+  };
 
   U.convertMs = function(ms, outputFormat) {
     var time; 

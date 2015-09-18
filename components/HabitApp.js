@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-(function(exports, PubSub, Habit, Messages, U) {
+(function(exports, PubSub, Habit, NewHabitForm, Messages, U) {
   'use strict';
 
   var sortHabits = function(a, b) {
@@ -37,6 +37,7 @@
       });
 
       return <div>
+        <NewHabitForm/>
         <div>{habits}</div>
         <Messages queue={this.state.queue}/>
       </div>;
@@ -45,4 +46,4 @@
 
   React.render(<HabitApp/>, document.getElementById('reactRoot')); 
 
-})(window, PubSub, Habit, Messages, U);
+})(window, PubSub, Habit, NewHabitForm, Messages, U);

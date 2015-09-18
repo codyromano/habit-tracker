@@ -253,6 +253,10 @@ form, input {
   transition: all ease .5s;
 }
 
+.form-btn + .form-btn {
+  margin-left: .5em;
+}
+
 .disabled {
   opacity: .25;
   cursor: default;
