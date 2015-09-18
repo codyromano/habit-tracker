@@ -29,6 +29,20 @@
     }
   };
 
+  // Debugging level cap system
+  function logLevelCaps(startLevel, maxLevel, fn) {
+    var level = startLevel,
+        newCap,
+        prevCap = 0; 
+
+    while (level < maxLevel) {
+      console.log('New points required to reach lvl %s: ', 
+      level + 1, fn(level) - prevCap);
+      prevCap = fn(level);
+      ++level;
+    }
+  }
+
   var HabitStore = exports.HabitStore = {}; 
   var habits = [];
 
@@ -37,7 +51,7 @@
   }
 
   function nextLevelCap(currentLevel) {
-    return Math.ceil( Math.pow(currentLevel, 2) );
+    return Math.ceil(currentLevel + Math.pow(currentLevel, 1.5));
   }
 
   function readyForLevelUp(level, totalTaps) {
