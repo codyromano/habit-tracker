@@ -1,0 +1,56 @@
+form, input {
+  font-size: 1em;
+}
+
+form {
+  padding-top: 1em;
+}
+
+input {
+  border-radius: .15em;
+  border: solid #ccc .05em;
+  padding: .25em;
+}
+
+.form-wrapper {
+  margin-bottom: 1em;
+  background: #eee;
+}
+
+label {
+  display: inline-block;
+  width: 5em;
+  font-size: .95em;
+}
+
+input[type=text] {
+  max-width: 95%;
+}
+
+input[type=radio] {
+  margin: .5em;
+}
+
+fieldset {
+  border: none;
+}
+
+.form-btn {
+  cursor: pointer;
+  background-color: #5E9DC8;
+  color: #fff;
+  margin: .5em 0;
+  display: inline-block;
+  padding: .5em 1.5em;
+  border-radius: .25em;
+  transition: all ease .5s;
+}
+
+.form-btn + .form-btn {
+  margin-left: .5em;
+}
+
+#expand-habit-form {
+  margin-bottom: 2em;
+}
+

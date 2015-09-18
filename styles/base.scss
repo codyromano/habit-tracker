@@ -1,0 +1,58 @@
+@import url(https://fonts.googleapis.com/css?family=Maven+Pro);
+
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+a {
+  cursor: pointer;
+}
+
+body, html {
+  font-family: 'Maven Pro', sans-serif;
+}
+
+main {
+  max-width: 70em;
+  width: 99%;
+  max-width: 40em;
+  margin: 0em auto 5em auto;
+}
+
+.link-danger {
+  color: crimson;
+}
+
+.link-success {
+  color: #5E9DC8;
+}
+
+.small {
+  width: 3em;
+}
+
+.disabled {
+  opacity: .25;
+  cursor: default;
+}
+
+.loading {
+  width: 1.5em;
+  position: relative;
+  top: 2.5em;
+  left: 1em;
+}
+
+.hidden {
+  display: none !important;
+}

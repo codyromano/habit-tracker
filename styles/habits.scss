@@ -1,0 +1,82 @@
+.habit {
+  position: relative;
+  text-align: center;
+  max-width: 50em;
+  width: 100%;
+  margin-bottom: 1em;
+  cursor: pointer;
+  border-radius: .25em;
+}
+
+.habit-title {
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+  line-height: 100%;
+  font-weight: bold;
+  font-size: 1em;
+  padding: .35em .5em 0 .5em;
+}
+
+.habit-actions [class*='link-'] {
+  padding: 1em 2em;
+  display: inline-block;
+}
+
+.habit-level, .habit-action-icon {
+  position: absolute;
+  top: 0px;
+  z-index: 2;
+}
+
+/* Add space around actions bar to prevent accidental taps */
+.habit-actions {
+  padding-top: 1em;
+}
+
+.habit-icon-inner {
+  background-image: url(http://igrowgolf.com/wp-content/uploads/2014/09/down-arrow-icon-50x50.png);
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  background-size: cover;
+  transform: rotate(-90deg);
+  transition: transform ease .5s;
+}
+
+.habit-action-icon-expanded .habit-icon-inner {
+  transform: rotate(0deg);
+}
+
+.habit-level {
+  left: 0em;
+  top: .25em;
+  padding-left: 2em;
+}
+
+.habit-level:after {
+  content: '';
+  display: inline-block;
+  background: url(https://cdn3.iconfinder.com/data/icons/general-outline/128/awards.png);
+  height: 1em;
+  width: 1em;
+  background-size: cover;
+  position: absolute;
+  left: .5em;
+  top: .15em;
+}
+
+.habit-action-icon {
+  right: 0px;
+}
+
+.habit-total {
+  background-color: #fff;
+  position: absolute;
+  font-size: 1em;
+  font-weight: bold;
+  top: 0px;
+  padding: .5em;
+  border-bottom-right-radius: .5em;
+}
+

@@ -7,7 +7,6 @@
     getInitialState: function() {
       return {
         formHidden: true,
-        freq: 2,
         freqType: 'days'
       };
     },
@@ -122,7 +121,7 @@
             </fieldset>
             <fieldset>
               <label htmlFor="freq">every</label>
-              <input type="number" ref="freq" name="freq" placeholder="2" className="small"/>
+              <input type="number" ref="freq" name="freq" value={this.state.freq} placeholder="2" className="small"/>
               {freqTypes}
             </fieldset>
             <fieldset>
