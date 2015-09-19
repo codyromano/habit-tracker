@@ -99,11 +99,11 @@
         'form-btn' : true, 
         'disabled' : !this.formIsValid()
       });
-
+	var showFreqTypes = {days: 'days', hours: 'hrs', minutes: 'mins'};
       var freqTypes = ['days','hours','minutes'].map(function(type) {
         var checked = (type === _self.state.freqType);
         return <span key={type}><input type="radio" ref="freqType" defaultChecked={checked}
-        value={type} name="freqType"/>{type}</span>;
+        value={type} name="freqType"/>{showFreqTypes[type]}</span>;
       });
 
       // TODO: Create a separate component for the inner content of the form

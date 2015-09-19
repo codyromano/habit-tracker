@@ -15,7 +15,7 @@
 
     onHabitDemoted: function(habit) {
       if (this.state.demoteWarned) { return; }
-      PubSub.publish("messageAdded", "WARNING: You're losing progress in " + habit.attr('title') + "!", 2000); 
+      PubSub.publish("messageAdded", "WARNING: You're losing progress in " + habit.attr('title') + "!", 5000); 
       this.setState({demoteWarned: true});
     },
 
@@ -62,7 +62,7 @@
       var wrapperClasses = U.getClassStr({
         'habit' : true,
         'noselect' : true,
-        'demote' : habit.pendingDemotions > 0
+        'demote' : (_self.state.timeLeftAsPercentage == 0)
       });
 
       var progressClasses = U.getClassStr({
@@ -73,7 +73,7 @@
 
       var habitIconClasses = U.getClassStr({
         'habit-action-icon' : true,
-        'habit-action-icon-expanded' : !_self.state.actionMenuHidden
+        'habit-action-icon-expanded' : !!!_self.state.actionMenuHidden
       });
 
       var titleClasses = U.getClassStr({
