@@ -32,8 +32,7 @@
     },
     render: function() {
       var habits = this.state.habits.sort(sortHabits).map(function(h) {
-        return <Habit key={h.id} title={h.title} freq={h.freq} level={h.level} 
-          totalTaps={h.totalTaps} lastTap={h.lastTap}/>;
+        return <Habit habit={h}/>;
       });
 
       return <div>

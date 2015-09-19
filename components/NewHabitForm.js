@@ -56,6 +56,7 @@
       var habit = {
         id: U.unique(),
         level: 1,
+        pendingDemotions: 0, 
         title: U.abbrev(this.state.title, 30),
         freq: freq,
         freqType: this.state.freqType,
@@ -105,6 +106,7 @@
         value={type} name="freqType"/>{type}</span>;
       });
 
+      // TODO: Create a separate component for the inner content of the form
       return <div>
         <a className={buttonClasses} onClick={this.expandFormButtonClicked}
         id="expand-habit-form">Develop a Positive Habit</a>
@@ -116,7 +118,7 @@
           id="habit-form" className={formClasses}>
             <fieldset>
               <label htmlFor="title">I want to</label>
-              <input type="text" ref="title" defaultValue={this.state.title} name="title" autoComplete="off" maxLength="30" 
+              <input type="text" ref="title" value={this.state.title} name="title" autoComplete="off" maxLength="30" 
               placeholder="exercise"/>
             </fieldset>
             <fieldset>

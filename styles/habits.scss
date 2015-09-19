@@ -18,6 +18,10 @@
   padding: .35em .5em 0 .5em;
 }
 
+.demote .habit-title {
+  color: crimson;
+}
+
 .habit-actions [class*='link-'] {
   padding: 1em 2em;
   display: inline-block;
@@ -66,6 +70,10 @@
   top: .15em;
 }
 
+.demote .habit-level:after {
+  background-image: url(http://www.clker.com/cliparts/b/v/t/I/h/y/warning-icon.svg);
+}
+
 .habit-action-icon {
   right: 0px;
 }
@@ -79,4 +87,3 @@
   padding: .5em;
   border-bottom-right-radius: .5em;
 }
-
