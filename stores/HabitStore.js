@@ -157,7 +157,7 @@
 
   function demote(habit) {
     updateHabits({id: habit.id}, function(h) {
-      var newTotalTaps = nextLevelCap(h.level - 1); 
+      var newTotalTaps = Math.max(0, nextLevelCap((h.level - 1) - h.pendingDemotions)); 
 
       // No demotions to apply
       if (isNaN(h.pendingDemotions) || h.pendingDemotions < 1) {
