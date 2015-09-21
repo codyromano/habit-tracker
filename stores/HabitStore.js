@@ -181,6 +181,7 @@
 
     updateHabits(query, function(habit) {
       var cap = nextLevelCap(habit.level),
+          now = new Date().getTime(),
           newLevel; 
 
       if (habit.pendingDemotions > 0) {
@@ -188,8 +189,13 @@
       }
 
       habit.totalTaps+= 1;
-      habit.lastTap = (new Date).getTime(); 
+      habit.lastTap = now;
 
+      // Add this to the history of taps on the habit
+      if (!habit.taps) {
+        habit.taps = [];
+      }
+      habit.taps.push(now);
 
       if (readyForLevelUp(habit.level, habit.totalTaps)) {
         newLevel = levelUp(habit);

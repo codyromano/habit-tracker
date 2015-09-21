@@ -50,6 +50,8 @@
         'minutes': 60
       };
 
+      var now = new Date().getTime();
+
       // Convert the user's frequency preference to milliseconds 
       // Example: "2 days" => 2 * 86400 * 1000
       var freq = (this.state.freq * freqTypes[this.state.freqType]) * 1000;
@@ -60,8 +62,9 @@
         title: U.abbrev(this.state.title, 30),
         freq: freq,
         freqType: this.state.freqType,
-        lastTap: new Date().getTime(),
-        totalTaps: 0
+        lastTap: now,
+        totalTaps: 0,
+        taps: [now]
       };
 
       // Tell the habit store a new habit should be created
