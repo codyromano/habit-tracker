@@ -45,11 +45,17 @@
   width: 30px;
   background-size: cover;
   transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg); 
   transition: transform ease .5s;
+  -webkit-transition: transform ease .5s;
+  -moz-transition: transform ease .5s;
 }
 
 .habit-action-icon-expanded .habit-icon-inner {
   transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
 }
 
 .habit-level {
