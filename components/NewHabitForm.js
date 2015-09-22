@@ -21,9 +21,23 @@
       return title[0] && !isNaN(freq) && freq > 0;
     },
 
+    submitOnEnter: function(ev) {
+      var ENTER = 13, 
+          keyCode = ev.keyCode || e.which;
+
+      if (this.formIsValid && keyCode === ENTER) {
+        this.onFormSubmit();
+      }
+    },
+
     componentDidMount: function() {
-      var submit = this.refs.submit.getDOMNode();
+      var submit = this.refs.submit.getDOMNode(),
+          title = this.refs.title.getDOMNode(),
+          freq = this.refs.freq.getDOMNode();
+
       submit.addEventListener('click', this.onFormSubmit, false);
+      title.addEventListener('keydown', this.submitOnEnter, false);
+      freq.addEventListener('keydown', this.submitOnEnter, false);
     },
 
     onFormUpdated: function(ev) {
