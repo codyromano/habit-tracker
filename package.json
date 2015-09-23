@@ -1,0 +1,29 @@
+{
+  "name": "habits",
+  "version": "1.0.0",
+  "description": "A simple tool to help you develop healthy, productive habits.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codyromano/habit-tracker.git"
+  },
+  "keywords": [
+    "productivity",
+    "timer",
+    "habits",
+    "lifestyle",
+    "exercise"
+  ],
+  "author": "Cody Romano",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codyromano/habit-tracker/issues"
+  },
+  "homepage": "https://github.com/codyromano/habit-tracker",
+  "dependencies": {
+    "express": "^4.13.3"
+  }
+}
