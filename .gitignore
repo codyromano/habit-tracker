@@ -3,3 +3,9 @@ node_modules/
 *.map
 *.DS_Store
 *.zip
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+appConfig.json

@@ -24,6 +24,10 @@
   },
   "homepage": "https://github.com/codyromano/habit-tracker",
   "dependencies": {
-    "express": "^4.13.3"
+    "aws-sdk": "^2.2.4",
+    "body-parser": "^1.14.0",
+    "express": "^4.13.3",
+    "fs": "0.0.2",
+    "underscore": "^1.8.3"
   }
 }

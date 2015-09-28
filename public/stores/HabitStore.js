@@ -1,4 +1,4 @@
-(function(exports, PubSub) {
+(function(exports, PubSub, $) {
   'use strict';
 
   // TODO: Move this into its own file
@@ -7,10 +7,25 @@
     * @returns {boolean}
     */
     save: function(key, value) {
+      var dbItem, ajax, 
+          valueAsString = JSON.stringify(value),
+          usingStorageBeta = window.location.hash.indexOf('beta-db') >=0;
+
       if (!localStorage) {
         return false; 
       }
-      localStorage.setItem(key, JSON.stringify(value));
+      localStorage.setItem(key, valueAsString);
+
+      if (usingStorageBeta) {
+        dbItem = {
+          userId: 'codyromano',
+          title: 'all-habits',
+          content: valueAsString
+        };
+
+        $.post( "/api/habits/", dbItem);
+      }
+
       return this.get(key) !== false;  
     }, 
     /**
@@ -261,4 +276,4 @@
 
   HabitStore.getHabits = getHabits; 
 
-})(window, PubSub); 
+})(window, PubSub, jQuery); 
