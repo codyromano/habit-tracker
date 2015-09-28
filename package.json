@@ -4,7 +4,7 @@
   "description": "A simple tool to help you develop healthy, productive habits.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node bin/www"
   },
   "repository": {
     "type": "git",
