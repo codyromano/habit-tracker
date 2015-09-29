@@ -1,31 +1,56 @@
 (function(exports, PubSub, $) {
   'use strict';
 
+  var usingStorageBeta = window.location.hash.indexOf('beta-db') >= 0;
+
   // TODO: Move this into its own file
   var DB = exports.DB =  {
+    remoteSaveInProgress: false,
+    remoteSaveTimeout: null,
+    remoteSaveRetry: 5000,
+    lastRemoteSave: new Date().getTime(),
+
+    requestRemoteSave: function(stringVal) {
+      var _self = this; 
+      var dbItem = {
+        userId: 'codyromano',
+        title: 'all-user-habits',
+        content: stringVal
+      };
+      var rateLimitOK = new Date().getTime() - this.lastRemoteSave
+         >= this.remoteSaveRetry;
+
+      // Backoff and retry if a save is in progress
+      if (this.remoteSaveInProgress || !rateLimitOK) {
+        clearTimeout(this.remoteSaveTimeout); 
+        this.remoteSaveTimeout = setTimeout(function() {
+          _self.requestRemoteSave(stringVal); 
+        }, this.remoteSaveRetry);
+        return;
+      }
+
+      this.remoteSaveInProgress = true; 
+      $.post( "/api/habits/", dbItem).done(function(data) {
+        _self.remoteSaveInProgress = false; 
+        _self.lastRemoteSave = new Date().getTime();
+      });
+    },
+
     /** 
     * @returns {boolean}
     */
     save: function(key, value) {
-      var dbItem, ajax, 
-          valueAsString = JSON.stringify(value),
-          usingStorageBeta = window.location.hash.indexOf('beta-db') >=0;
+      var _self = this, 
+          dbItem, ajax, 
+          valueAsString = JSON.stringify(value);
 
-      if (!localStorage) {
-        return false; 
+      if (localStorage) {
+        localStorage.setItem(key, valueAsString);
       }
-      localStorage.setItem(key, valueAsString);
 
       if (usingStorageBeta) {
-        dbItem = {
-          userId: 'codyromano',
-          title: 'all-habits',
-          content: valueAsString
-        };
-
-        $.post( "/api/habits/", dbItem);
+        this.requestRemoteSave(valueAsString); 
       }
-
       return this.get(key) !== false;  
     }, 
     /**
@@ -260,11 +285,28 @@
   }
 
   function loadHabits() {
-    var stored = DB.get('habits'); 
-    if (stored) {
-      habits = stored.map(addUtils); 
-      PubSub.publish('habitListChanged', habits); 
-    }
+    var localStored = DB.get('habits'),
+        resp, storedHabits = []; 
+
+    $.get("/api/habits/", function(data) {
+      try {
+        resp = JSON.parse(data);
+        storedHabits = [];  
+
+        // If the user is in dynamo beta group and GET call is OK
+        if (usingStorageBeta && resp.content) {
+          storedHabits = JSON.parse(resp.content); 
+          habits = storedHabits.map(addUtils);
+          PubSub.publish('habitListChanged', habits); 
+
+        // Fall back to local storage if it exists 
+        } else if (localStored) {
+          habits = localStored.map(addUtils);
+          PubSub.publish('habitListChanged', habits); 
+        }
+
+      } catch (e){}
+    });
   }
 
   PubSub.subscribe('habitPastDue', addPendingDemotion); 

@@ -6,6 +6,31 @@ function toString(any) {
   return '' + any; 
 }
 
+proto.getAll = function(config, db, req, res) {
+  var params = {
+    AttributesToGet: ['content'],
+    TableName: config.AWS_HABITS_TABLE,
+    Key: {
+      userId: {"S" : "codyromano"},
+      title: {"S" : "all-user-habits"}
+    }
+  };
+
+  function onResponse(err, data) {
+    var result; 
+
+    if (err) {
+      result = {success: false, message: 'Could not query all user habits'};
+    } else if (data) {
+      result = {success: true, message: 'Query successful', content: data.Item.content.S};
+    }
+
+    res.send(JSON.stringify(result));
+  }
+
+  db.getItem(params, onResponse); 
+};
+
 proto.saveAll = function(config, db, req, res) {
   var newItem = {
     TableName: config.AWS_HABITS_TABLE,
