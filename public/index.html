@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="styles/main.css"/>
 
 <script>
+  // Google analytics 
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -31,20 +32,33 @@
 
 </head>
 <body>
+
+<script>
+// Facebook SDK
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
+
   <main>
+    <!-- TODO: This should be part of a React component --> 
+  <div class="fb-button-wrapper">
+    <fb:login-button scope="public_profile,email" onlogin="FBUserStore.checkLoginState();">
+    </fb:login-button>
+  </div>
+
     <div id="reactRoot" class="noselect"><img src="images/loading.gif" class="loading"/></div>
   </main>
 
 <!-- Eliminate mobile touch delay --> 
 <script src="thirdparty/fastclick.js"></script>
-<script>
-(function() {
-  // Initialize FastClick
-  var attachFastClick = Origami.fastclick;
-  attachFastClick(document.body);
-})();
-</script>
 
+<!-- TODO: Remove jQuery. I'm only using it for AJAX calls in two places; the
+library is unnecessarily expensive --> 
 <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 
 <!-- React and and its dependencies --> 
@@ -56,6 +70,8 @@
 
 <script src="utils/U.js"></script>
 <script src="utils/PubSub.js"></script>
+<script src="stores/UserStore.js"></script>
+<script src="stores/FBUserStore.js"></script>
 
 <!-- Habits --> 
 <script src="stores/HabitStore.js"></script>
@@ -69,6 +85,23 @@
 
 <!-- Primary component --> 
 <script src="components/HabitApp.js" type="text/jsx"></script>
+
+<script>
+(function() {
+  // Initialize FastClick
+  var attachFastClick = Origami.fastclick;
+  attachFastClick(document.body);
+
+  PubSub.subscribe('userAuthenticated', function(profile) {
+    if (typeof profile.name !== 'string') {
+      return; 
+    }
+    var firstName = profile.name.split(' ')[0];
+    $('.fb-button-wrapper').text('Welcome, ' + firstName);
+  });
+
+})();
+</script>
 
 </body>
 </html>

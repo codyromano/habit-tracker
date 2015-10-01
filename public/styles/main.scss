@@ -3,3 +3,11 @@
 @import 'habits';
 @import 'messages';
 @import 'progress-bar';
+
+.fb-button-wrapper {
+  position: absolute;
+  top: .25em;
+  right: .5em;
+  z-index: 0;
+  font-size: .9em;
+}

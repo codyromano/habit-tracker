@@ -1,7 +1,11 @@
-(function(exports, PubSub, $) {
+(function(exports, PubSub, UserStore, $) {
   'use strict';
 
-  var usingStorageBeta = window.location.hash.indexOf('beta-db') >= 0;
+  var profile = UserStore.getProfile(); 
+
+  PubSub.subscribe('userProfileChanged', function(newProfile) {
+    profile = newProfile;
+  });
 
   // TODO: Move this into its own file
   var DB = exports.DB =  {
@@ -10,10 +14,10 @@
     remoteSaveRetry: 5000,
     lastRemoteSave: new Date().getTime(),
 
-    requestRemoteSave: function(stringVal) {
+    requestRemoteSave: function(profileId, stringVal) {
       var _self = this; 
       var dbItem = {
-        userId: 'codyromano',
+        userId: profileId,
         title: 'all-user-habits',
         content: stringVal
       };
@@ -48,8 +52,8 @@
         localStorage.setItem(key, valueAsString);
       }
 
-      if (usingStorageBeta) {
-        this.requestRemoteSave(valueAsString); 
+      if (profile.id) {
+        this.requestRemoteSave(profile.id, valueAsString); 
       }
       return this.get(key) !== false;  
     }, 
@@ -284,38 +288,55 @@
     DB.save('habits', habits);
   }
 
-  function loadHabits() {
-    var localStored = DB.get('habits'),
-        resp, storedHabits = []; 
+  /* TODO: All of this needs to be consolidated into a generic 
+  database class...Way too much is happening in this store. */
+  function loadHabitsFromRemote(profileId) {
+    var resp, storedHabits; 
 
-    $.get("/api/habits/", function(data) {
+    $.get("/api/habits/" + profileId, function(data) {
       try {
         resp = JSON.parse(data);
         storedHabits = [];  
 
         // If the user is in dynamo beta group and GET call is OK
-        if (usingStorageBeta && resp.content) {
+        if (resp.content) {
           storedHabits = JSON.parse(resp.content); 
           habits = storedHabits.map(addUtils);
           PubSub.publish('habitListChanged', habits); 
 
         // Fall back to local storage if it exists 
-        } else if (localStored) {
-          habits = localStored.map(addUtils);
-          PubSub.publish('habitListChanged', habits); 
         }
-
       } catch (e){}
     });
+  }
+
+  function loadHabits() {
+    var localStored = DB.get('habits');
+
+    if (profile.id) {
+      loadHabitsFromRemote(profile.id);
+      return true;
+    }
+
+    if (localStored) {
+      habits = localStored.map(addUtils);
+      PubSub.publish('habitListChanged', habits); 
+      return true;
+    }
+
+    return false; 
   }
 
   PubSub.subscribe('habitPastDue', addPendingDemotion); 
   PubSub.subscribe('habitAdded', addHabit);
   PubSub.subscribe('habitDeleted', deleteHabit);
   PubSub.subscribe('habitCompleted', incrementHabitTaps);
+  PubSub.subscribe('userAuthenticated', function(profile) {
+    loadHabitsFromRemote(profile.id); 
+  });
 
   loadHabits();
 
   HabitStore.getHabits = getHabits; 
 
-})(window, PubSub, jQuery); 
+})(window, PubSub, UserStore, jQuery); 

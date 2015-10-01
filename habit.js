@@ -7,11 +7,13 @@ function toString(any) {
 }
 
 proto.getAll = function(config, db, req, res) {
+  var userId = toString(req.params.id); 
+
   var params = {
     AttributesToGet: ['content'],
     TableName: config.AWS_HABITS_TABLE,
     Key: {
-      userId: {"S" : "codyromano"},
+      userId: {"S" : userId},
       title: {"S" : "all-user-habits"}
     }
   };

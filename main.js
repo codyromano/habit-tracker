@@ -38,6 +38,6 @@ app.get('/', function(req, res) {
 });
 
 app.post('/api/habits/', habit.saveAll.bind(undefined, config, db));
-app.get('/api/habits/', habit.getAll.bind(undefined, config, db)); 
+app.get('/api/habits/:id', habit.getAll.bind(undefined, config, db)); 
 
 module.exports = app;

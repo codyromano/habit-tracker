@@ -4,6 +4,8 @@ form, input {
 
 form {
   padding-top: 1em;
+  position: relative;
+  z-index: 1;
 }
 
 input {
