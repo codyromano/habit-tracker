@@ -17,6 +17,8 @@ input {
 .form-wrapper {
   margin-bottom: 1em;
   background: #eee;
+  position: relative;
+  z-index: 2;
 }
 
 label {

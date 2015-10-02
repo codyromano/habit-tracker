@@ -21,6 +21,10 @@ body, html {
   font-family: 'Maven Pro', sans-serif;
 }
 
+.app-wrapper {
+  position: relative;
+}
+
 main {
   max-width: 70em;
   width: 99%;
