@@ -44,7 +44,7 @@
 }(document, 'script', 'facebook-jssdk'));
 </script>
 
-  <main>
+  <main class="app-wrapper">
     <!-- TODO: This should be part of a React component --> 
   <div class="fb-button-wrapper">
     <fb:login-button scope="public_profile,email" onlogin="FBUserStore.checkLoginState();">
@@ -56,6 +56,14 @@
 
 <!-- Eliminate mobile touch delay --> 
 <script src="thirdparty/fastclick.js"></script>
+<script>
+(function() {
+  'use strict';
+  // Initialize FastClick
+  var attachFastClick = Origami.fastclick;
+  attachFastClick(document.body);
+})();
+</script>
 
 <!-- TODO: Remove jQuery. I'm only using it for AJAX calls in two places; the
 library is unnecessarily expensive --> 
@@ -70,6 +78,26 @@ library is unnecessarily expensive -->
 
 <script src="utils/U.js"></script>
 <script src="utils/PubSub.js"></script>
+<script>
+(function(PubSub, $) {
+  'use strict';
+
+  var $fbWrapper = $('.fb-button-wrapper'); 
+  /**
+  * @todo The user welcome text should be incorporated into
+  * a React component and then we can remove this inline script.
+  */
+  PubSub.subscribe('userAuthenticated', function(profile) {
+    if (typeof profile.name !== 'string') {
+      return; 
+    }
+    var firstName = profile.name.split(' ')[0];
+    $fbWrapper.text('Welcome, ' + firstName);
+  });
+})(PubSub, jQuery); 
+</script>
+
+
 <script src="stores/UserStore.js"></script>
 <script src="stores/FBUserStore.js"></script>
 
@@ -86,21 +114,6 @@ library is unnecessarily expensive -->
 <!-- Primary component --> 
 <script src="components/HabitApp.js" type="text/jsx"></script>
 
-<script>
-(function() {
-  // Initialize FastClick
-  var attachFastClick = Origami.fastclick;
-  attachFastClick(document.body);
-
-  PubSub.subscribe('userAuthenticated', function(profile) {
-    if (typeof profile.name !== 'string') {
-      return; 
-    }
-    var firstName = profile.name.split(' ')[0];
-    $('.fb-button-wrapper').text('Welcome, ' + firstName);
-  });
-
-})();
 </script>
 
 </body>

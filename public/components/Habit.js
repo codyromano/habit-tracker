@@ -47,7 +47,7 @@
 
       this.setState({'timeLeftAsPercentage': timeLeftAsPercentage});
 
-      if (timeLeftAsPercentage > 25 && timeLeftAsPercentage < 50 && !this.state.warned) {
+      if (timeLeftAsPercentage > 0 && timeLeftAsPercentage < 25 && !this.state.warned) {
         this.setState({warned: true}); 
         PubSub.publish('messageAdded', "Warning: You need to " + habit.attr('title') + 
           " ASAP or you'll be demoted to a lower level.", 4000); 

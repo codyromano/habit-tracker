@@ -3,8 +3,11 @@
   var FBUserStore = exports.FBUserStore = {};
 
   function statusChangeCallback(response) {
+    console.log('statusChangeCallback: ', response); 
+
     if (response.status === 'connected') {
       FB.api('/me', function(response) {
+        console.log('user authenticated: ', response);
         PubSub.publish('userAuthenticated', response);
       });
     }
