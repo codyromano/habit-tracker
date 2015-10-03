@@ -1,21 +1,18 @@
-(function(exports, PubSub) {
+(function(exports, PubSub, U) {
 
   var FBUserStore = exports.FBUserStore = {};
 
-  var prodConfig = {
-    appId      : '1638331476433853',
-    cookie     : true,  // enable cookies to allow the server to access 
-                        // the session
-    xfbml      : true,  // parse social plugins on this page
-    version    : 'v2.2' // use version 2.2
+  var facebookConfigProd = {
+      appId      : '1638331476433853',
+      xfbml      : true,
+      version    : 'v2.4'
   };
 
-  var devConfig = {
+  var facebookConfigDevo = {
     appId      : '1638334596433541',
-    cookie     : true,  // enable cookies to allow the server to access 
-                        // the session
-    xfbml      : true,  // parse social plugins on this page
-    version    : 'v2.2' // use version 2.2
+    cookie     : true, 
+    xfbml      : true,  
+    version    : 'v2.2' 
   };
 
   function statusChangeCallback(response) {
@@ -36,30 +33,18 @@
   };
 
   window.fbAsyncInit = function() {
-    var domain = document.domain, config; 
+    var config, domain = U.getDomain(); 
 
-    if (domain === 'habits.elasticbeanstalk.com') {
-      config = prodConfig; 
-    } else if (domain === 'localhost') {
-      config = devConfig; 
-    } else {
-      throw new Error('Invalid app domain; cannot initialize FB SDK');
+    if (domain === 'prod') {
+      config = facebookConfigProd; 
+    } else if (domain === 'devo') {
+      config = facebookConfigDevo; 
     }
 
-    FB.init(config);
-
+    FB.init(config); 
     FB.getLoginStatus(function(response) {
       statusChangeCallback(response);
     });
   };
 
-  // Facebook SDK
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-
-})(window, PubSub);
+})(window, PubSub, U);

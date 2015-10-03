@@ -2,6 +2,23 @@
   'use strict';
 
   var U = exports.U = {}; // Utilities
+
+  U.getDomain = function() {
+    var domain = document.domain,
+        domainErrorMsg = 'Unknown / unauthorized domain'; 
+
+    if (domain === 'habits.elasticbeanstalk.com') {
+      return 'prod';
+    }
+    if (domain === 'localhost') {
+      return 'devo';
+    }
+    if (domain === '127.0.0.1') {
+      domainErrorMsg+=': To make the Facebook API happy, please hit "http://localhost"' + 
+        ' instead of 127.0.0.1'; 
+    }
+    throw new Error(domainErrorMsg); 
+  };
  
   /**
   * @desc Check if a child object has all the properties
