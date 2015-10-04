@@ -1,6 +1,10 @@
 (function(exports, PubSub, UserStore, $) {
   'use strict';
 
+  if (localStorage) {
+    localStorage.removeItem('habits');
+  }
+
   var profile = UserStore.getProfile(); 
 
   PubSub.subscribe('userProfileChanged', function(newProfile) {
@@ -48,10 +52,6 @@
           dbItem, ajax, 
           valueAsString = JSON.stringify(value);
 
-      if (localStorage) {
-        localStorage.setItem(key, valueAsString);
-      }
-
       if (profile.id) {
         this.requestRemoteSave(profile.id, valueAsString); 
       }
@@ -61,15 +61,9 @@
     * @returns {object|boolean}
     */
     get: function(key) {
-      var item = localStorage.getItem(key); 
-      if (!item) {
-        return false;
-      }
-      try {
-        return JSON.parse(item); 
-      } catch (e) {
-        return false; 
-      }
+      /**
+      * @todo Update or remove method
+      */
     }
   };
 
@@ -288,42 +282,71 @@
     DB.save('habits', habits);
   }
 
+  function toHashTable(objectArray, keyProperty) {
+    return objectArray.reduce(function(result, object) {
+      var key = object[keyProperty];
+      result[key] = result[key] || []; 
+      return result[key].push(object) && result; 
+    }, {});
+  }
+
+  function sortHabitsByTap(a, b) {
+    if (a.lastTap === b.lastTap) { 
+      return 0; 
+    }
+    return (a.lastTap > b.lastTap) ? -1 : 1;
+  }
+
+  function pruneOldItems(versionA, versionB) {
+    console.groupCollapsed('Pruning old habits'); 
+
+    var result = [];
+    var hashTable = toHashTable(versionA.concat(versionB), 'id');
+    var key, newestItem;
+
+    console.log('hashTable %O', hashTable);
+
+    for (key in hashTable) {
+      newestItem = hashTable[key]
+        .sort(sortHabitsByTap)[0];
+
+      console.log('Compared items %O and chose %O', hashTable[key], newestItem);
+      result.push(newestItem);
+    }
+
+    console.groupEnd();
+    return result;
+  }
+
   /* TODO: All of this needs to be consolidated into a generic 
   database class...Way too much is happening in this store. */
   function loadHabitsFromRemote(profileId) {
-    var resp, storedHabits; 
+    var resp, habitsFromServer;
 
     $.get("/api/habits/" + profileId, function(data) {
       try {
         resp = JSON.parse(data);
-        storedHabits = [];  
 
         // If the user is in dynamo beta group and GET call is OK
         if (resp.content) {
-          storedHabits = JSON.parse(resp.content); 
-          habits = storedHabits.map(addUtils);
+          habitsFromServer = JSON.parse(resp.content).map(addUtils);
+          habits = pruneOldItems(habitsFromServer, habits);
           PubSub.publish('habitListChanged', habits); 
-
-        // Fall back to local storage if it exists 
         }
-      } catch (e){}
+      } catch (e){
+        console.error('Could not parse JSON response');
+      }
+
+      setTimeout(loadHabitsFromRemote.bind(undefined, profileId), 10000);
     });
   }
 
   function loadHabits() {
-    var localStored = DB.get('habits');
-
     if (profile.id) {
       loadHabitsFromRemote(profile.id);
-      return true;
-    }
-
-    if (localStored) {
-      habits = localStored.map(addUtils);
       PubSub.publish('habitListChanged', habits); 
       return true;
     }
-
     return false; 
   }
 
