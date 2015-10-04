@@ -3,7 +3,7 @@
 (function(exports, PubSub, Habit, NewHabitForm, Messages, U) {
   'use strict';
 
-  var sortHabits = function(a, b) {
+  function sortHabits(a, b) {
      var now = new Date().getTime(),
      ageA = (now - a.lastTap) / a.freq,
      ageB = (now - b.lastTap) / b.freq;
@@ -13,6 +13,10 @@
      }
      return (ageA > ageB) ? -1 : 1;
   };
+
+  function isNotDeleted(habit) {
+    return habit.deleted !== true; 
+  }
 
   var HabitApp = exports.HabitApp = React.createClass({
     getInitialState: function() {
@@ -24,7 +28,7 @@
     componentDidMount: function() {
       var _self = this; 
       PubSub.subscribe('habitListChanged', function(habits) {
-        _self.setState({habits: habits});
+        _self.setState({habits: habits.filter(isNotDeleted)});
       });
       PubSub.subscribe('messageListChanged', function(messages) {
         _self.setState({queue: messages}); 

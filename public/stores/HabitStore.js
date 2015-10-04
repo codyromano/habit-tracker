@@ -1,4 +1,4 @@
-(function(exports, PubSub, UserStore, $) {
+(function(exports, PubSub, UserStore, $, config) {
   'use strict';
 
   if (localStorage) {
@@ -10,6 +10,42 @@
   PubSub.subscribe('userProfileChanged', function(newProfile) {
     profile = newProfile;
   });
+
+  function sync(profileId) {
+
+    new Promise(function(resolve, reject) {
+
+      $.get("/api/habits/" + profileId, function(response) {
+        try {
+          response = JSON.parse(response);
+          resolve(JSON.parse(response.content));
+        } catch (e) {
+          reject('Error parsing JSON');
+        }
+      }).error(function(message) {
+        reject(message);
+      });
+
+    }).then(function(habitsFromServer) {
+
+      habits = pruneOldItems(habits, habitsFromServer).map(addUtils);
+      PubSub.publish('habitListChanged', habits);
+
+      var dbItem = {
+        userId: profileId,
+        title: 'all-user-habits',
+        content: JSON.stringify(habits)
+      };
+
+      return new Promise(function(resolve, reject) {
+        $.post( "/api/habits/", dbItem)
+          .done(resolve)
+          .error(reject);
+      });
+    }).then(function() {
+      setTimeout(sync.bind(undefined, profileId), 7000);
+    });
+  }
 
   // TODO: Move this into its own file
   var DB = exports.DB =  {
@@ -32,16 +68,16 @@
       if (this.remoteSaveInProgress || !rateLimitOK) {
         clearTimeout(this.remoteSaveTimeout); 
         this.remoteSaveTimeout = setTimeout(function() {
-          _self.requestRemoteSave(stringVal); 
+          _self.requestRemoteSave(profileId, stringVal); 
         }, this.remoteSaveRetry);
         return;
       }
 
       this.remoteSaveInProgress = true; 
-      $.post( "/api/habits/", dbItem).done(function(data) {
-        _self.remoteSaveInProgress = false; 
-        _self.lastRemoteSave = new Date().getTime();
-      });
+
+      if (!dbItem.content || !dbItem.content.length) {
+        throw new Error('No content to POST');
+      }
     },
 
     /** 
@@ -123,7 +159,8 @@
   }
 
   function getHabits() {
-    return habits.map(addUtils);
+    var result = habits;
+    return result.map(addUtils);
   }
 
   function nextLevelCap(currentLevel) {
@@ -148,7 +185,7 @@
     updateHabits({id: habit.id}, function(habit) {
       newLevel = ++habit.level;
       saveHabits();
-      PubSub.publish('habitsListChanged', habits.map(addUtils));
+      PubSub.publish('habitsListChanged', getHabits());
       return habit;
     });
 
@@ -183,6 +220,7 @@
       var result;
       if (U.isSuperset(h, queryObj)) {
         result = fn(h); 
+        result.timeLastUpdated = new Date().getTime();
         updated.push(result); 
       }
       result = result || h; 
@@ -253,24 +291,31 @@
   }
 
   function deleteHabit(uniqAttr, uniqValue) {
-    var i = 0;
-    while (habits[i]) {
-      if (habits[i][uniqAttr] && habits[i][uniqAttr] === uniqValue) {
-        habits.splice(i, 1);
-        PubSub.publish('habitListChanged', habits);
-        saveHabits(); 
-        return true;
-      }
-      ++i;
+    var recordDeleted = false,
+        query = {}; 
+
+    query[uniqAttr] = uniqValue;
+
+    updateHabits(query, function(habit) {
+      habit.deleted = true; 
+      recordDeleted = true; 
+      return habit;
+    });
+
+    if (recordDeleted) {
+      PubSub.publish('habitListChanged', getHabits());
+      saveHabits();
     }
-    return false; 
+    return recordDeleted;
   }
 
   function addHabit(habit) {
     var time = U.convertMs(habit.freq, habit.freqType);
+    habit.timeLastUpdated = new Date().getTime();
+    habit.version = config('version');
 
     habits.push(habit);
-    PubSub.publish('habitListChanged', habits.map(addUtils));
+    PubSub.publish('habitListChanged', getHabits());
 
     PubSub.publish('messageAdded', 'You have ' + time + ' ' + habit.freqType +
      ' to ' + habit.title + '! Tap the progress bar when you\'re done.', 8000);
@@ -291,63 +336,24 @@
   }
 
   function sortHabitsByTap(a, b) {
-    if (a.lastTap === b.lastTap) { 
+    if (a.timeLastUpdated === b.timeLastUpdated) { 
       return 0; 
     }
-    return (a.lastTap > b.lastTap) ? -1 : 1;
+    return (a.timeLastUpdated > b.timeLastUpdated) ? -1 : 1;
   }
 
   function pruneOldItems(versionA, versionB) {
-    console.groupCollapsed('Pruning old habits'); 
-
-    var result = [];
+    var result = [], newestItem;
     var hashTable = toHashTable(versionA.concat(versionB), 'id');
-    var key, newestItem;
 
-    console.log('hashTable %O', hashTable);
-
-    for (key in hashTable) {
+    for (var key in hashTable) {
       newestItem = hashTable[key]
         .sort(sortHabitsByTap)[0];
 
-      console.log('Compared items %O and chose %O', hashTable[key], newestItem);
       result.push(newestItem);
-    }
+    } 
 
-    console.groupEnd();
     return result;
-  }
-
-  /* TODO: All of this needs to be consolidated into a generic 
-  database class...Way too much is happening in this store. */
-  function loadHabitsFromRemote(profileId) {
-    var resp, habitsFromServer;
-
-    $.get("/api/habits/" + profileId, function(data) {
-      try {
-        resp = JSON.parse(data);
-
-        // If the user is in dynamo beta group and GET call is OK
-        if (resp.content) {
-          habitsFromServer = JSON.parse(resp.content).map(addUtils);
-          habits = pruneOldItems(habitsFromServer, habits);
-          PubSub.publish('habitListChanged', habits); 
-        }
-      } catch (e){
-        console.error('Could not parse JSON response');
-      }
-
-      setTimeout(loadHabitsFromRemote.bind(undefined, profileId), 10000);
-    });
-  }
-
-  function loadHabits() {
-    if (profile.id) {
-      loadHabitsFromRemote(profile.id);
-      PubSub.publish('habitListChanged', habits); 
-      return true;
-    }
-    return false; 
   }
 
   PubSub.subscribe('habitPastDue', addPendingDemotion); 
@@ -355,11 +361,9 @@
   PubSub.subscribe('habitDeleted', deleteHabit);
   PubSub.subscribe('habitCompleted', incrementHabitTaps);
   PubSub.subscribe('userAuthenticated', function(profile) {
-    loadHabitsFromRemote(profile.id); 
+    sync(profile.id);
   });
-
-  loadHabits();
 
   HabitStore.getHabits = getHabits; 
 
-})(window, PubSub, UserStore, jQuery); 
+})(window, PubSub, UserStore, jQuery, config); 
