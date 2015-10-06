@@ -126,7 +126,7 @@
       // TODO: Create a separate component for the inner content of the form
       return <div>
         <a className={buttonClasses} onClick={this.expandFormButtonClicked}
-        id="expand-habit-form">Develop a Positive Habit</a>
+        id="expand-habit-form">Add Habit</a>
 
         <div className="form-wrapper">
           <form name="habit" ref="form" 
