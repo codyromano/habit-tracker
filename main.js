@@ -4,7 +4,8 @@ var express      =  require('express'),
     AWS          =  require('aws-sdk'),
     bodyParser   =  require('body-parser'),
     _            =  require('underscore'),
-    Habit        =  require('./habit');
+    Habit        =  require('./habit'),
+    gulpfile     =  require('./gulpfile');
 
 var habit        =  new Habit();
 
