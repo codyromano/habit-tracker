@@ -146,7 +146,7 @@
             <fieldset>
               <a id="close-form" onClick={this.collapseFormButtonClicked} 
               className="form-btn">Cancel</a>
-              <a id="submit-habit-form" ref="submit" className={addHabitBtnClasses}>Add Habit</a>
+              <a id="submit-habit-form" ref="submit" className={addHabitBtnClasses}>Create</a>
             </fieldset>
           </form>
         </div>
