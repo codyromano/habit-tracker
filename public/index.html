@@ -43,41 +43,21 @@
     <div id="reactRoot" class="app-wrapper noselect"><img src="images/loading.gif" class="loading"/></div>
   </main>
 
-<!-- Eliminate mobile touch delay --> 
-<script src="thirdparty/fastclick.js"></script>
-<script>
-(function() {
-  'use strict';
-  // Initialize FastClick
-  var attachFastClick = Origami.fastclick;
-  attachFastClick(document.body);
-})();
-</script>
+<script src="all-non-jsx.js"></script>
 
-<!-- TODO: Remove jQuery. I'm only using it for AJAX calls in two places; the
-library is unnecessarily expensive --> 
-<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- React and and its dependencies --> 
-<script src="thirdparty/es5-shim.min.js"></script>
-<script src="thirdparty/es5-sham.min.js"></script>
-<script src="thirdparty/console-polyfill.js"></script>
-<script src="thirdparty/react.js"></script>
-<script src="thirdparty/JSXTransformer.js"></script>
-
-<script src="publicConfig.js"></script>
-
-<script src="utils/U.js"></script>
-<script src="utils/PubSub.js"></script>
 <script>
 (function(PubSub, $) {
   'use strict';
 
-  var $fbWrapper = $('.fb-button-wrapper'); 
+  // Initialize FastClick to eliminate mobile touch delay
+  var attachFastClick = Origami.fastclick;
+  attachFastClick(document.body);
+
   /**
   * @todo The user welcome text should be incorporated into
   * a React component and then we can remove this inline script.
   */
+  var $fbWrapper = $('.fb-button-wrapper'); 
   PubSub.subscribe('userAuthenticated', function(profile) {
     if (typeof profile.name !== 'string') {
       return; 
@@ -88,24 +68,12 @@ library is unnecessarily expensive -->
 })(PubSub, jQuery); 
 </script>
 
-
-<script src="stores/UserStore.js"></script>
-<script src="stores/FBUserStore.js"></script>
-
-<!-- Habits --> 
-<script src="stores/HabitStore.js"></script>
 <script src="components/HabitActionMenu.js" type="text/jsx"></script>
 <script src="components/Habit.js" type="text/jsx"></script>
 <script src="components/NewHabitForm.js" type="text/jsx"></script>
-
-<!-- Messages --> 
-<script src="stores/MessageStore.js"></script>
 <script src="components/Messages.js" type="text/jsx"></script>
-
 <!-- Primary component --> 
 <script src="components/HabitApp.js" type="text/jsx"></script>
-
-</script>
 
 </body>
 </html>
