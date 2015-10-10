@@ -3,6 +3,23 @@
 
   var U = exports.U = {}; // Utilities
 
+  U.addClass = function(el, className) {
+    el.classList.add(className);
+    return el;
+  };  
+
+  U.hide = function(el) {
+    U.addClass(el, 'hidden');
+    return el;
+  };
+
+  U.extend = function(objA, objB) {
+    for (var key in objB) {
+      objA[key] = objB[key];
+    }
+    return objA;
+  };
+
   U.getDomain = function() {
     var domain = document.domain,
         domainErrorMsg = 'Unknown / unauthorized domain'; 

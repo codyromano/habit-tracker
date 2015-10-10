@@ -15,14 +15,43 @@
     version    : 'v2.2' 
   };
 
-  function statusChangeCallback(response) {
-    console.log('statusChangeCallback: ', response); 
+  /**
+  * @returns {Object} User full name and Facebook ID
+  */
+  function getBasicProfile(resultObj) {
+    resultObj = resultObj || {}; 
 
-    if (response.status === 'connected') {
+    return new Promise(function(resolve, reject) {
       FB.api('/me', function(response) {
-        console.log('user authenticated: ', response);
-        PubSub.publish('userAuthenticated', response);
+        resultObj = U.extend(resultObj, response);
+        resolve(response);
       });
+    });
+  }
+
+  function getProfilePic(resultObj) {
+    resultObj = resultObj || {}; 
+
+    return new Promise(function(resolve, reject) {
+      FB.api('/me/picture', function(response) {
+        resultObj.profilePicture = response.data.url; 
+
+        if (response && !response.error) {
+          resolve(resultObj); 
+        } else {
+          reject(resultObj);
+        }
+      });
+    });
+  }
+
+  function statusChangeCallback(response) {
+    if (response.status === 'connected') {
+      getBasicProfile()
+        .then(getProfilePic)
+        .then(function(profile) {
+          PubSub.publish('userAuthenticated', profile);
+        });
     }
   }
 

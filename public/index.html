@@ -19,16 +19,16 @@
   <link rel="stylesheet" href="https://necolas.github.io/normalize.css/3.0.2/normalize.css"/>
   <link rel="stylesheet" href="styles/main.css"/>
 
-  <script>
-  // Updated Google Analytics
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+<script>
+// Updated Google Analytics
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-68332784-1', 'auto');
-  ga('send', 'pageview');
-  </script>
+ga('create', 'UA-68332784-1', 'auto');
+ga('send', 'pageview');
+</script>
 
 </head>
 <body>
@@ -40,33 +40,10 @@
     </fb:login-button>
   </div>
 
-    <div id="reactRoot" class="app-wrapper noselect"><img src="images/loading.gif" class="loading"/></div>
+    <div id="reactRoot" style="position:relative;" class="noselect"><img src="images/loading.gif" class="loading"/></div>
   </main>
 
 <script src="all-non-jsx.js"></script>
-
-<script>
-(function(PubSub, $) {
-  'use strict';
-
-  // Initialize FastClick to eliminate mobile touch delay
-  var attachFastClick = Origami.fastclick;
-  attachFastClick(document.body);
-
-  /**
-  * @todo The user welcome text should be incorporated into
-  * a React component and then we can remove this inline script.
-  */
-  var $fbWrapper = $('.fb-button-wrapper'); 
-  PubSub.subscribe('userAuthenticated', function(profile) {
-    if (typeof profile.name !== 'string') {
-      return; 
-    }
-    var firstName = profile.name.split(' ')[0];
-    $fbWrapper.text('Welcome, ' + firstName);
-  });
-})(PubSub, jQuery); 
-</script>
 
 <script src="components/HabitActionMenu.js" type="text/jsx"></script>
 <script src="components/Habit.js" type="text/jsx"></script>
@@ -74,6 +51,30 @@
 <script src="components/Messages.js" type="text/jsx"></script>
 <!-- Primary component --> 
 <script src="components/HabitApp.js" type="text/jsx"></script>
+
+<script>
+(function() {
+  // Initialize FastClick
+  var attachFastClick = Origami.fastclick;
+  attachFastClick(document.body);
+
+  var fbWrapper = document.querySelector('.fb-button-wrapper');
+
+  PubSub.subscribe('userAuthenticated', function(profile) {
+    // Hide the login button
+    U.hide(document.querySelector('.fb_iframe_widget'));
+
+    var img = document.createElement('img');
+    U.addClass(img, 'profile-picture');
+
+    img.onload = function() {
+      fbWrapper.appendChild(img);
+    };
+    img.src = profile.profilePicture;
+  });
+
+})();
+</script>
 
 </body>
 </html>
