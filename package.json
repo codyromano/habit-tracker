@@ -27,15 +27,21 @@
     "aws-sdk": "^2.2.4",
     "body-parser": "^1.14.0",
     "express": "^4.13.3",
-    "fs": "0.0.2",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-load-plugins": "^1.0.0-rc.1",
+    "gulp-minify-css": "^1.2.1",
     "gulp-uglify": "^1.4.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "connect-livereload": "^0.5.3",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
+    "gulp-load-plugins": "^1.0.0-rc.1",
+    "gulp-minify-css": "^1.2.1",
+    "gulp-sass": "^2.0.4",
     "gulp-uglify": "^1.4.1"
   }
 }

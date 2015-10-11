@@ -1,14 +1,22 @@
 'use strict';
 
-var gulp     = require('gulp'),
-    uglify   = require('gulp-uglify'),
-    concat   = require('gulp-concat'),
-    app      = require('./main');
+var gulp                = require('gulp'),
+    plugins             = require('gulp-load-plugins')(),
+    uglify              = require('gulp-uglify'),
+    concat              = require('gulp-concat'),
+    app                 = require('./main');
 
 app.set('port', process.env.PORT || 8081);
 
-gulp.task('minify', function () {
+gulp.task('start-server', function() {
+  var server = app.listen(app.get('port'), function() {
+    console.log('Express server listening on port %s', 
+      server.address().port);
+  });
+  return server; 
+});
 
+gulp.task('minify-js', function() {
   /**
   * @todo Process and concatenate JSX files as well as plain JS 
   */
@@ -34,15 +42,22 @@ gulp.task('minify', function () {
         ])
       .pipe(concat('all-non-jsx.js'))
       .pipe(uglify())
-      .pipe(gulp.dest('./public/'));
+      .pipe(gulp.dest('./public/'))
+      .pipe(plugins.livereload());
 });
 
-gulp.task('startServer', function() {
-  var server = app.listen(app.get('port'), function() {
-    console.log('Express server listening on port %s', 
-      server.address().port);
-  });
-  return server; 
+gulp.task('compile-sass', function() {
+  return gulp.src('public/styles/main.scss')
+    .pipe(plugins.sass())
+    .pipe(plugins.minifyCss())
+    .pipe(gulp.dest('./public/styles/'))
+    .pipe(plugins.livereload());
 });
 
-gulp.task('default', ['minify', 'startServer']);
+gulp.task('watch', function() {
+  plugins.livereload.listen();
+  gulp.watch(['public/**/*.js','!public/all-non-jsx.js'], ['minify-js']);
+  gulp.watch('public/styles/**.scss', ['compile-sass']);
+});
+
+gulp.task('default', ['start-server', 'minify-js', 'compile-sass', 'watch']);
