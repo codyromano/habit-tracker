@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 (function(exports, React) {
   'use strict';
 
