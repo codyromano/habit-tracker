@@ -19,8 +19,12 @@
 
 ### Set Up for Local Development
 
-1. [Fork this repo](https://github.com/codyromano/habit-tracker#fork-destination-box)
-2. Go to the project's root directory and install dependencies: 
+#### Dependencies
+* [Node](https://nodejs.org) - version 0.12.0 or greater
+* [SASS](http://sass-lang.com/) - version 3.3.4 or greater
+
+1. [Fork and clone this repo](https://github.com/codyromano/habit-tracker#fork-destination-box)
+2. Go to the repo's root directory and install dependencies: 
     ```
     npm install
     ```
@@ -30,19 +34,13 @@
     cp appConfig.example.json appConfig.json
     ```
     In the copied file you'll notice two placeholders for secret keys. AWS uses the keys to access DynamoDB. Unfortunately        you'll need to [message me](http://codyromano.com/contact/) for credentials. (I apologize for the convenience; creating a     mock data service is on my To Do list.)
-
-4. If you're not editing CSS, you can skip to Step #5. To make CSS-related changes you need [SASS](http://sass-lang.com/). With SASS installed, navigate to the project's root directory and run: 
-    ```
-    cd public/styles
-    sass --watch main.scss --style compressed
-    ```
-    SASS will generate a new `main.css` whenever a `.scss` file changes. `main.scss` is the primary SASS file, which              references all the other stylesheets. (Note that this step up of setup could be replaced with a `Gulp` task in Node. Also     on my To Do list.)
-5. Start the server: 
+    
+4. Start the server: 
     ```
     npm start
     ```
   
-6. Navigate to the following URL in your browser: 
+5. View the app in your browser: 
     ```
-    http://localhost:8081/
+    open http://localhost:8081/
     ```
