@@ -23,6 +23,8 @@
 * [Node](https://nodejs.org) - version 0.12.0 or greater
 * [SASS](http://sass-lang.com/) - version 3.3.4 or greater
 
+--
+
 1. [Fork and clone this repo](https://github.com/codyromano/habit-tracker#fork-destination-box)
 2. Go to the repo's root directory and install dependencies: 
     ```
