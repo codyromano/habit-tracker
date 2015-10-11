@@ -1,12 +1,14 @@
 # Habit Tracker
 ### A web app that helps you form long-lasting, positive life habits.
-![](http://s18.postimg.org/9939haahl/Screenshot_2015_10_10_22_45_28.png)
+![http://habits.elasticbeanstalk.com](http://s18.postimg.org/9939haahl/Screenshot_2015_10_10_22_45_28.png)
 
 ### How it works
 
 * Describe an activity you want to do regularly.
 * A progress bar will appear. Tap the bar and mark the habit as "done" to level up in that activity.
 * Your progress bar constantly drains down. If you slack off, you'll lose a level.
+
+    #### [Live Demo](http://habits.elasticbeanstalk.com)
 
 ### Tech Overview
 
@@ -15,7 +17,7 @@
 * **Data Storage:** AWS - DynamoDB
 * **Hosting Environment:** AWS - Elastic Beanstalk
 
-### Set Up
+### Set Up for Local Development
 
 1. [Fork this repo](https://github.com/codyromano/habit-tracker#fork-destination-box)
 2. Go to the project's root directory and install dependencies: 
