@@ -7,7 +7,8 @@
 * Describe an activity you want to do regularly.
 * A progress bar will appear. Tap the bar and mark the habit as "done" to level up in that activity.
 * Your progress bar constantly drains down. If you slack off, you'll lose a level.
-    #### [Live Demo](http://habits.elasticbeanstalk.com)
+    
+  #### [Live Demo](http://habits.elasticbeanstalk.com)
 
 ### Tech Overview
 
