@@ -54,25 +54,11 @@ ga('send', 'pageview');
 
 <script>
 (function() {
+  'use strict';
+  
   // Initialize FastClick
   var attachFastClick = Origami.fastclick;
   attachFastClick(document.body);
-
-  var fbWrapper = document.querySelector('.fb-button-wrapper');
-
-  PubSub.subscribe('userAuthenticated', function(profile) {
-    // Hide the login button
-    U.hide(document.querySelector('.fb_iframe_widget'));
-
-    var img = document.createElement('img');
-    U.addClass(img, 'profile-picture');
-
-    img.onload = function() {
-      fbWrapper.appendChild(img);
-    };
-    img.src = profile.profilePicture;
-  });
-
 })();
 </script>
 
