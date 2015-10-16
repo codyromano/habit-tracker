@@ -6,6 +6,7 @@
   width: 100%;
   background-color: #DCF0F7;
   transition: all ease .5s;
+  box-shadow: 0 0 .1em #999;
 }
 
 .progress-warn {
@@ -13,7 +14,7 @@
 }
 
 .progress-danger {
-  background-color: rgba(255,0,0,.5);
+  background-color: rgba(255,0,0,.4);
 }
 
 .progress {

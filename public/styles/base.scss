@@ -1,3 +1,14 @@
+@font-face{
+  font-family:'MuseoSans';
+  src:url("http://s3.amazonaws.com/atlasobscura-fonts/museosans-300-webfont.eot");
+  src:url("http://s3.amazonaws.com/atlasobscura-fonts/museosans-300-webfont.eot?#iefix") format("embedded-opentype"),
+  url("http://s3.amazonaws.com/atlasobscura-fonts/museosans-300-webfont.woff") format("woff"),
+  url("http://s3.amazonaws.com/atlasobscura-fonts/museosans-300-webfont.ttf") format("truetype"),
+  url("http://s3.amazonaws.com/atlasobscura-fonts/museosans-300-webfont.svg#MuseoSans300Regular") format("svg");
+  font-weight:300;
+  font-style:normal;
+}
+
 /* TODO: This declaration should be optimized; it is too broad.*/
 * {
   box-sizing: border-box;
@@ -17,7 +28,7 @@ a {
 }
 
 body, html {
-  font-family: 'Maven Pro', sans-serif;
+  font-family: MuseoSans;
 }
 
 .app-wrapper {
@@ -25,9 +36,8 @@ body, html {
 }
 
 main {
-  max-width: 70em;
   width: 99%;
-  max-width: 40em;
+  max-width: 30em;
   margin: 0em auto 5em auto;
 }
 
