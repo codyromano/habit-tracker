@@ -35,6 +35,8 @@
       fbWrapper.appendChild(img);
     };
     img.src = profile.profilePicture;
+
+    U.text(document.querySelector('.user-name'), profile.name);
   });
 
   /**

@@ -8,6 +8,11 @@
     return el;
   };  
 
+  U.text = function(el, str) {
+    var prop = 'innerText' in el ? 'innerText' : 'textContent';
+    el[prop] = str;
+  };
+
   U.hide = function(el) {
     U.addClass(el, 'hidden');
     return el;

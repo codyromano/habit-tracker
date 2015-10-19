@@ -35,10 +35,15 @@ ga('send', 'pageview');
 <body>
 
   <main class="app-wrapper">
-    <!-- TODO: This should be part of a React component --> 
+    <!-- TODO: This and the life score display should be part of React components --> 
   <div class="fb-button-wrapper">
     <fb:login-button scope="public_profile,email" onlogin="FBUserStore.checkLoginState();">
     </fb:login-button>
+
+    <div class="life-score-wrapper hidden" id="ls-wrapper">
+      <strong class="user-name"></strong>
+      Life Score: <span id="life-score">0</span>
+    </div>
   </div>
 
     <div id="reactRoot" style="position:relative;" class="noselect"><img src="images/loading.gif" class="loading"/></div>
@@ -48,13 +53,22 @@ ga('send', 'pageview');
 <script src="all-jsx.js"></script>
 
 <script>
-(function() {
+(function(U) {
   'use strict';
   
   // Initialize FastClick
   var attachFastClick = Origami.fastclick;
   attachFastClick(document.body);
-})();
+
+  var lifeScoreWrapper = document.getElementById('ls-wrapper'),
+      lifeScore = document.getElementById('life-score');
+
+  PubSub.subscribe('lifeScoreCalculated', function(score) {
+    lifeScoreWrapper.classList.remove('hidden');
+    U.text(lifeScore, score);
+  });
+
+})(U);
 </script>
 
 </body>

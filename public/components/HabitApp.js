@@ -10,7 +10,7 @@
          return 0; 
      }
      return (ageA > ageB) ? -1 : 1;
-  };
+  }
 
   function isNotDeleted(habit) {
     return habit.deleted !== true; 
@@ -26,7 +26,8 @@
     componentDidMount: function() {
       var _self = this; 
       PubSub.subscribe('habitListChanged', function(habits) {
-        _self.setState({habits: habits.filter(isNotDeleted)});
+        var showHabits = habits.filter(isNotDeleted);
+        _self.setState({habits: showHabits});
       });
       PubSub.subscribe('messageListChanged', function(messages) {
         _self.setState({queue: messages}); 

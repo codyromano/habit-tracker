@@ -2,3 +2,28 @@
   height: 2.25rem;
   border-radius: 100%;
 }
+
+.life-score-wrapper, .fb-button-wrapper {
+  position: absolute;
+}
+
+.life-score-wrapper {
+  width: 10rem;
+  right: 3rem;
+  top: .25rem;
+  font-size: .8rem;
+  text-align: right;
+}
+
+.life-score-wrapper .user-name {
+  display: block;
+  font-size: smaller;
+  margin-bottom: .25rem;
+}
+
+.fb-button-wrapper {
+  top: .5em;
+  right: .5em;
+  z-index: 3;
+  font-size: .9em;
+}
