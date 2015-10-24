@@ -1,69 +1,40 @@
-var express          =  require('express'),
-    fs               =  require('fs'),
-    path             =  require('path'),
-    AWS              =  require('aws-sdk'),
-    bodyParser       =  require('body-parser'),
-    passport         =  require('passport'),
-    FacebookStrategy = require('passport-facebook').Strategy
-    util             =  require('util'),
-    session          =  require('express-session'),
-    methodOverride   = require('method-override'),
-    cookieParser     = require("cookie-parser")
-    _                =  require('underscore'),
-    Habit            =  require('./habit'),
-    gulpfile         =  require('./gulpfile');
+/********** Modules ************/
 
-var habit        =  new Habit();
+// Utilities 
+var util = require('util'),
+    _ = require('underscore');
 
+// Web server and file system
+var express = require('express'),
+    fs = require('fs'),
+    path = require('path');
+
+// Basic Configuration
 var rootDir = path.dirname(require.main.filename);
 var pathToConfig = './appConfig.json';
-
-// General config including params needed by AWS
 var config = fs.readFileSync(pathToConfig, 'utf8');
 config = JSON.parse(config);
+config.env = (process.env.NODE_ENV=='dev') ? 'dev' : 'production';
 
-/********** Passport Facebook login  ************/
-
+// Social login
+var passport = new require('./HabitsPassport')(config);
 var fbPermsScope = ['email'];
 
-// Passport session setup.
-//   To support persistent login sessions, Passport needs to be able to
-//   serialize users into and deserialize users out of the session.  Typically,
-//   this will be as simple as storing the user ID when serializing, and finding
-//   the user by ID when deserializing.  However, since this example does not
-//   have a database of user records, the complete Facebook profile is serialized
-//   and deserialized.
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
+// Session handlers and parsers
+var bodyParser = require('body-parser'),
+  session = require('express-session'),
+  methodOverride = require('method-override'),
+  cookieParser = require("cookie-parser");
 
-passport.deserializeUser(function(obj, done) {
-  done(null, obj);
-});
+// Databases
+var AWS = require('aws-sdk');
 
-// Use the FacebookStrategy within Passport.
-//   Strategies in Passport require a `verify` function, which accept
-//   credentials (in this case, an accessToken, refreshToken, and Facebook
-//   profile), and invoke a callback with a user object.
-passport.use(new FacebookStrategy({
-    clientID: config.FB_APP_ID,
-    clientSecret: config.FB_APP_SECRET,
-    callbackURL: "http://localhost:" + 8081 + "/auth/facebook/callback",
-    profileFields: ['id', 'displayName', 'email', 'picture', 'friends']
-  },
-  function(accessToken, refreshToken, profile, done) {
-    // asynchronous verification, for effect...
-    process.nextTick(function () {
-      // To keep the example simple, the user's Facebook profile is returned to
-      // represent the logged-in user.  In a typical application, you would want
-      // to associate the Facebook account with a user record in your database,
-      // and return that user instead.
-      return done(null, profile);
-    });
-  }
-));
+// App routes 
+var Habit = require('./habit');
+var habit = new Habit();
 
-/********** /Passport Facebook login  ************/
+// Build system 
+var gulpfile = require('./gulpfile');
 
 // AWS and DynamoDB configuration
 AWS.config.update({
@@ -101,31 +72,16 @@ app.get('/', function(req, res) {
 });
 
 app.get('/account', ensureAuthenticated, function(req, res){
-  console.log('user in /account: ', req.user);
-  //res.render('account', { user: req.user });
+  // TODO: Implement this as part of the upcoming user profile feature
 });
 
 app.get('/login', function(req, res){
   res.render('login', { user: req.user });
 });
 
-// GET /auth/facebook
-//   Use passport.authenticate() as route middleware to authenticate the
-//   request.  The first step in Facebook authentication will involve
-//   redirecting the user to facebook.com.  After authorization, Facebook will
-//   redirect the user back to this application at /auth/facebook/callback
 app.get('/auth/facebook',
-  passport.authenticate('facebook', { scope: fbPermsScope }),
-  function(req, res){
-    // The request will be redirected to Facebook for authentication, so this
-    // function will not be called.
-  });
+  passport.authenticate('facebook', { scope: fbPermsScope }));
 
-// GET /auth/facebook/callback
-//   Use passport.authenticate() as route middleware to authenticate the
-//   request.  If authentication fails, the user will be redirected back to the
-//   login page.  Otherwise, the primary route function function will be called,
-//   which, in this example, will redirect the user to the home page.
 app.get('/auth/facebook/callback', 
   passport.authenticate('facebook', { scope: fbPermsScope, failureRedirect: '/login' }),
   function(req, res) {
@@ -137,11 +93,6 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 
-// Simple route middleware to ensure user is authenticated.
-//   Use this route middleware on any resource that needs to be protected.  If
-//   the request is authenticated (typically via a persistent login session),
-//   the request will proceed.  Otherwise, the user will be redirected to the
-//   login page.
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/auth/facebook')

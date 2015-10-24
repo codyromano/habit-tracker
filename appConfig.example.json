@@ -1,6 +1,13 @@
 {
   "AWS_REGION": "us-west-2",
   "AWS_HABITS_TABLE": "habits",
-  "AWS_ACCESS_KEY_ID": "YOUR-ACCESS-KEY",
-  "AWS_SECRET_ACCESS_KEY": "YOUR-SECRET-ACCESS-KEY"
+  "AWS_ACCESS_KEY_ID": "[YOUR ACCESS KEY]",
+  "AWS_SECRET_ACCESS_KEY": "[YOUR SECRET KEY]",
+  "FB_APP_ID" : "1638334596433541",
+  "FB_APP_SECRET" : "[YOUR APP SECRET]",
+  "PASSPORT_SECRET" : "[YOUR PASSPORT]",
+
+  "BASE_URL_DEV" : "http://localhost:8081/",
+  "BASE_URL_PRODUCTION" : "http://habits.elasticbeanstalk.com/"
 }
+

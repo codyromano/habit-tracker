@@ -53,6 +53,9 @@
           PubSub.publish('userAuthenticated', profile);
         });
     }
+    /* TODO: Handle the scenario of a user logging out
+    on Facebook.com and returning to Habit Tracker. Application
+    state needs to be updated for this in several areas. */
   }
 
   FBUserStore.checkLoginState = function() {

@@ -48,6 +48,11 @@ fieldset {
   padding: .5em 1.5em;
   border-radius: .25em;
   transition: all ease .5s;
+  text-decoration: none;
+}
+
+.form-btn-secondary {
+  background-color: #ccc;
 }
 
 .form-btn + .form-btn {
