@@ -17,6 +17,12 @@
   }
 
   var HabitApp = exports.HabitApp = React.createClass({
+    getInitialProps: function() {
+      return {
+        user: {}
+      };
+    },
+
     getInitialState: function() {
       return {
         habits: HabitStore.getHabits(),
@@ -32,6 +38,9 @@
       PubSub.subscribe('messageListChanged', function(messages) {
         _self.setState({queue: messages}); 
       });
+      PubSub.subscribe('userProfileChanged', function(profile) {
+        _self.setProps({user: profile});
+      });
     },
     render: function() {
       var habits = this.state.habits.sort(sortHabits).map(function(h) {
@@ -39,8 +48,11 @@
       });
 
       return <div>
+        <HabitHeader user={this.props.user}/>
         <NewHabitForm/>
-        <div>{habits}</div>
+        <div className="main-content">
+          <div>{habits}</div>
+        </div>
         <Messages queue={this.state.queue}/>
       </div>;
     }

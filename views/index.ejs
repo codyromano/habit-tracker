@@ -10,7 +10,7 @@
   <meta property="og:type" content="article"/>
   <meta property="og:title" content="Don't Just Form Healthy Habits; Stick to Them"/>
   <meta property="og:site_name" content="Habit Tracker (Beta)"/>
-  <meta property="og:url" content="http://codyromano.com/habits/index.html"/>
+  <meta property="og:url" content="http://habits.elasticbeanstalk.com/"/>
   <meta property="og:description" content="Habit Tracker helps you set and stick to long-term goals. Use the game-like interface to develop healthy, productive habits and keep track of areas where you're lacking. The goals can relate to work, personal fitness, relationships, etc."/>
   <meta property="og:locale" content="en_US" />    
   <meta property="article:author" content="https://www.facebook.com/profile.php?id=100008994942933"/>
@@ -35,24 +35,6 @@ ga('send', 'pageview');
 <body>
 
   <main class="app-wrapper">
-    <!-- TODO: This and the life score display should be part of React components --> 
-    <div class="fb-button-wrapper">
-      <% if (user && user.profilePhoto) { %>
-
-        <div class="profile-wrapper">
-          <div class="life-score-wrapper hidden" id="ls-wrapper">
-            <strong class="user-name"><%= user.displayName %></strong>
-            Life Score: <span id="life-score">0</span>
-          </div>
-
-          <img src="<%= user.profilePhoto %>" class="profile-picture"/>
-        </div>
-
-      <% } else { %>
-        <a href="/auth/facebook/" class="form-btn form-btn-secondary">Save</a>
-      <% } %>
-    </div>
-
     <div id="reactRoot" style="position:relative;" class="noselect"><img src="images/loading.gif" class="loading"/></div>
   </main>
 
@@ -63,6 +45,7 @@ ga('send', 'pageview');
 (function(U) {
   'use strict';
   
+  /*
   // Initialize FastClick
   var attachFastClick = Origami.fastclick;
   attachFastClick(document.body);
@@ -76,6 +59,7 @@ ga('send', 'pageview');
       U.text(lifeScore, score);
     }
   });
+*/
 
 })(U);
 </script>

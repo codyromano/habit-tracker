@@ -1,7 +1,11 @@
+$light-gray: #f6f7f8;
+
+@import 'grid';
 @import 'base';
 @import 'forms';
 @import 'habits';
 @import 'messages';
 @import 'progress-bar';
 @import 'profile';
+@import 'header';
 

@@ -1,0 +1,52 @@
+$header-image-data: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAqCAMAAABFoMFOAAAAWlBMV…8/UxBxQDQuFwlpqgBZBq6+P+unVY1GnDgwqbD2zGz5e1lBdwvGGPE6OgAAAABJRU5ErkJggg==";
+
+.primary-header {
+  background-image: url($header-image-data);
+  background-repeat: repeat-x;
+  background-size: auto;
+  background-position: 0 0;
+  background-color: #3a5795;
+  border: 0;
+  border-bottom: 1px solid #133783;
+  box-shadow: 0 2px 2px -2px rgba(0, 0, 0, .52);
+  position: relative;
+  z-index: 300;
+}
+
+.primary-header:after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+.main-header-link {
+  display: block;
+  float: left;
+  height: 2.5rem;
+  color: #fff;
+  text-shadow: 0 -1px #283a6d;
+  padding-right: 1em;
+  padding-left: 1em;
+  font-size: 1em;
+}
+
+a.main-header-link:hover {
+  background-color: #2f477a;
+}
+
+header .main-header-link:first-of-type {
+  margin-left: -1em;
+}
+
+header .main-header-link:last-of-type {
+  margin-right: -1em;
+}
+
+.main-header-link-right {
+  float: right;
+}
+
+.main-header-link span {
+  display: block;
+  margin-top: .75em;
+}

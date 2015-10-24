@@ -29,13 +29,18 @@
     },
 
     componentDidMount: function() {
-      var submit = this.refs.submit.getDOMNode(),
+      var _self = this,
+          submit = this.refs.submit.getDOMNode(),
           title = this.refs.title.getDOMNode(),
           freq = this.refs.freq.getDOMNode();
 
       submit.addEventListener('click', this.onFormSubmit, false);
       title.addEventListener('keydown', this.submitOnEnter, false);
       freq.addEventListener('keydown', this.submitOnEnter, false);
+
+      PubSub.subscribe('addHabitButtonClicked', function() {
+        _self.expandFormButtonClicked();
+      });
     },
 
     onFormUpdated: function(ev) {
@@ -123,14 +128,13 @@
 
       // TODO: Create a separate component for the inner content of the form
       return <div>
-        <a className={buttonClasses} onClick={this.expandFormButtonClicked}
-        id="expand-habit-form">Add Habit</a>
 
         <div className="form-wrapper">
           <form name="habit" ref="form" 
           onChange={this.onFormUpdated} 
           onSubmit={this.onFormSubmit}
           id="habit-form" className={formClasses}>
+            <div className="main-content">
             <fieldset>
               <label htmlFor="title">I want to</label>
               <input type="text" ref="title" value={this.state.title} name="title" autoComplete="off" maxLength="30" 
@@ -146,6 +150,7 @@
               className="form-btn">Cancel</a>
               <a id="submit-habit-form" ref="submit" className={addHabitBtnClasses}>Create</a>
             </fieldset>
+            </div>
           </form>
         </div>
       </div>;

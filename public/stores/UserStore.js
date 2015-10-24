@@ -2,9 +2,12 @@
 
   var UserStore = exports.UserStore = {}; 
 
+  let getFirstName = fullName => fullName.trim(' ').split(' ')[0];
+
   var user = {
     id: null,
-    name: null
+    name: null,
+    lifeScore: 0
   };
 
   function levelSum(habits) {
@@ -22,17 +25,18 @@
     return user[key] || user; 
   };
 
+  UserStore.isLoggedIn = function() {
+    return user.id !== null;
+  };
+
   function updateProfile(props) {
     for (var key in props) {
       user[key] = props[key];
     }
-
+    if (typeof user.name === 'string') {
+      user.firstName = getFirstName(user.name);
+    }
     PubSub.publish('userProfileChanged', user); 
-
-    console.assert(
-      user.id && user.name,
-      'user attributes were added'
-    );
   } 
 
   PubSub.subscribe('userAuthenticated', updateProfile); 
@@ -42,7 +46,7 @@
     });
     var sum = levelSum(undeletedHabits);
     var score = getLifeScore(sum, undeletedHabits.length); 
-    PubSub.publish('lifeScoreCalculated', score); 
+    updateProfile({lifeScore: score});
   });
 
 })(window, PubSub); 

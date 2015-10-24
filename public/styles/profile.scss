@@ -1,33 +1,17 @@
 .profile-picture {
-  height: 2.25rem;
+  height: 1.75em;
+  margin-top: .35em;
   border-radius: 100%;
 }
 
-.life-score-wrapper, .fb-button-wrapper {
-  position: absolute;
-}
-
 .life-score-wrapper {
-  width: 10rem;
-  right: 3rem;
-  top: .25rem;
-  font-size: .8rem;
   text-align: right;
 }
 
 .life-score-wrapper .user-name {
   display: block;
-  font-size: smaller;
-  margin-bottom: .25rem;
+  font-size: .85em;
+  margin-top: .8em;
+  margin-right: 1em;
 }
 
-.fb-button-wrapper {
-  right: .5em;
-  top: -.1em;
-  z-index: 2;
-}
-
-.profile-wrapper {
-  position: relative;
-  top: .5em;
-}
