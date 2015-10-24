@@ -4,6 +4,9 @@ node_modules/
 *.DS_Store
 *.zip
 
+public/all-jsx.js
+public/all-non-jsx.js
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

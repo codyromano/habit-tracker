@@ -16,30 +16,6 @@
   };
 
   /**
-  * @desc Replaces the Facebook Login button with a profile picture 
-  * @todo This needs to be a component; stores should not affect the DOM
-  */
-  PubSub.subscribe('userAuthenticated', function(profile) {
-    var img = document.createElement('img'),
-        fbWrapper = document.querySelector('.fb-button-wrapper'),
-        loginButton = document.querySelector('.fb_iframe_widget');
-
-    if (!fbWrapper || !loginButton) {
-      throw new Error('FB login button not found in the DOM');
-    }
-
-    U.hide(loginButton);
-    U.addClass(img, 'profile-picture');
-
-    img.onload = function() {
-      fbWrapper.appendChild(img);
-    };
-    img.src = profile.profilePicture;
-
-    U.text(document.querySelector('.user-name'), profile.name);
-  });
-
-  /**
   * @returns {Object} User full name and Facebook ID
   */
   function getBasicProfile(resultObj) {
