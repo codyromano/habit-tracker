@@ -87,7 +87,10 @@ gulp.task('minify-js', function() {
 
 gulp.task('compile-sass', function() {
   return gulp.src('public/styles/main.scss')
-    .pipe(plugins.sass())
+    .pipe(plugins.sass({
+      sourceComments: 'normal',
+      indentedSyntax: true
+    }))
     .pipe(plugins.minifyCss())
     .pipe(gulp.dest('./public/styles/'))
     .pipe(plugins.livereload());

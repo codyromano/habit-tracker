@@ -6,8 +6,17 @@
   margin: .75em 0;
   cursor: pointer;
   border-radius: .25em;
-  padding-bottom: .5em;
   background-color: #fff;
+}
+
+.habit:last-of-type {
+  margin-bottom: 5rem;
+}
+
+.habit-bar-container {
+  position: relative;
+  width: 100%;
+  height: 2.5em;
 }
 
 .habit-title {
@@ -17,7 +26,6 @@
   line-height: 100%;
   font-weight: bold;
   font-size: 1em;
-  padding: .75em .5em 0 .5em;
 }
 
 .demote .habit-title {
@@ -29,26 +37,32 @@
   display: inline-block;
 }
 
-.habit-level, .habit-action-icon {
-  position: absolute;
-  top: 0px;
-  z-index: 2;
-}
-
 /* Add space around actions bar to prevent accidental taps */
 .habit-actions {
-  padding-top: 1em;
+  background-color: #f6f7f8;
+  background-image: url(/rsrc.php/v2/y1/r/wL6VQj7Ab77.png);
+  background-repeat: repeat-x;
+  border-radius: 2px;
+  box-shadow: 0 .15em 1px rgba(0, 0, 0, .05);
+  box-sizing: content-box;
+  -webkit-font-smoothing: antialiased;
+  text-align: center;
+  vertical-align: middle;
 }
 
 .habit-icon-inner {
-  background-image: url(../images/down-arrow.png);
   display: inline-block;
-  height: 30px;
-  width: 30px;
-  background-size: cover;
+  margin-top: .15em;
+  background-image: url(../images/down-arrow.png);
+  width: 1em;
+  height: 1em;
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  padding-bottom: 1em;
   transform: rotate(-90deg);
   -webkit-transform: rotate(-90deg);
-  -moz-transform: rotate(-90deg); 
+  -moz-transform: rotate(-90deg);
   transition: all ease .5s;
   opacity: .5;
 }
@@ -57,6 +71,7 @@
   transform: rotate(0deg);
   -webkit-transform: rotate(0deg);
   -moz-transform: rotate(0deg);
+  transform: translate(-.25em,.25em)
 }
 
 .habit:hover .habit-icon-inner {
@@ -70,22 +85,25 @@
   opacity: .6;
 }
 
+$trophy-icon-size: 1em;
+
 .habit-level:after {
   content: '';
   display: inline-block;
   background: url(https://cdn3.iconfinder.com/data/icons/general-outline/128/awards.png);
-  height: 1em;
-  width: 1em;
+  height: $trophy-icon-size;
+  width: $trophy-icon-size;
   background-size: cover;
   position: absolute;
   left: .5em;
-  top: .15em;
+  top: 50%;
+  margin-top: -($trophy-icon-size / 2);
 }
 
 .demote .habit-level:after {
   background: url(../images/danger.png) no-repeat;
   background-size: cover;
-  margin-top: -.15em;
+
 }
 
 .habit-action-icon {

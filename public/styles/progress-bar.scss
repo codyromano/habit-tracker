@@ -2,12 +2,15 @@
   position: absolute;
   top: 0px;
   left: 0px;
-  height: 2.25em;
+  height: 2.5rem;
   width: 100%;
   background-color: #DCF0F7;
   transition: all ease .5s;
   box-shadow: 0 0 .1em #999;
   background-color: rgba(#3b5998, .25);
+  border-radius: .25em;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 /*
@@ -19,7 +22,3 @@
   background-color: rgba(255,0,0,.4);
 }
 */
-
-.progress {
-  border-radius: .25em;
-}

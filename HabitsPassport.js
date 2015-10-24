@@ -17,7 +17,18 @@ function getFBCallbackURL(config) {
   return baseURL + 'auth/facebook/callback';
 }
 
+function getFBAppId(config) {
+  if (config.env === 'dev') {
+    return config.FB_APP_ID_DEVO;
+  } else if (config.env === 'production') {
+    return config.FB_APP_ID_PROD;
+  }
+  throw new Error('Unknown environment name');
+}
+
 module.exports = function(config) {
+  const FB_APP_ID = getFBAppId(config);
+
   passport.serializeUser(function(user, done) {
     done(null, user);
   });
@@ -27,7 +38,7 @@ module.exports = function(config) {
   });
 
   passport.use(new FacebookStrategy({
-      clientID: config.FB_APP_ID,
+      clientID: FB_APP_ID,
       clientSecret: config.FB_APP_SECRET,
       callbackURL: getFBCallbackURL(config),
       profileFields: ['id', 'displayName', 'email', 'picture', 'friends']

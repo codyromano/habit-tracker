@@ -39,7 +39,7 @@
     
 4. Start the server: 
     ```
-    npm start
+    NODE_ENV=dev npm start
     ```
   
 5. View the app in your browser: 

@@ -1,7 +1,32 @@
 .profile-picture {
   height: 1.75em;
   margin-top: .35em;
-  border-radius: 100%;
+  border-radius: 20%;
+}
+
+.profile-pic-wrapper {
+  position: relative; 
+  display: block;
+  float: right;
+  width: 2em;
+  padding-right: 4em;
+}
+
+.ls-text {
+  position: absolute;
+  top: .15em;
+  left: 3.35em;
+  font-size: .75em;
+  width: 2em;
+  display: block;
+  text-align: center;
+}
+
+.ribbon {
+  position: absolute;
+  width: 3.5em;
+  top: 0px;
+  left: 1.5em;
 }
 
 .life-score-wrapper {
@@ -12,6 +37,6 @@
   display: block;
   font-size: .85em;
   margin-top: .8em;
-  margin-right: 1em;
+
 }
 

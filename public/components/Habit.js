@@ -15,7 +15,6 @@
 
     onHabitDemoted: function(habit) {
       if (this.state.demoteWarned) { return; }
-      PubSub.publish("messageAdded", "WARNING: You're losing progress in " + habit.attr('title') + "!", 5000); 
       this.setState({demoteWarned: true});
     },
 
@@ -49,8 +48,6 @@
 
       if (timeLeftAsPercentage > 0 && timeLeftAsPercentage < 25 && !this.state.warned) {
         this.setState({warned: true}); 
-        PubSub.publish('messageAdded', "Warning: You need to " + habit.attr('title') + 
-          " ASAP or you'll be demoted to a lower level.", 4000); 
       }
     },
 
@@ -61,6 +58,7 @@
 
       var wrapperClasses = U.getClassStr({
         'habit' : true,
+        'grid' : true,
         'noselect' : true,
         'demote' : (_self.state.timeLeftAsPercentage == 0)
       });
@@ -73,24 +71,38 @@
 
       var habitIconClasses = U.getClassStr({
         'habit-action-icon' : true,
-        'habit-action-icon-expanded' : !!!_self.state.actionMenuHidden
+        'habit-action-icon-expanded' : !!!_self.state.actionMenuHidden,
+        'col-1' : true,
+        'col-last' : true,
+        'valign-wrapper' : true
       });
 
       var titleClasses = U.getClassStr({
-        'habit-title' : true
+        'habit-title' : true,
+        'col-8' : true,
+        'valign-wrapper' : true
       });
 
       return <div className={wrapperClasses} onClick={this.toggleActionMenu}>
-        <div className={progressClasses} style={progressStyle}></div>
 
-        <div className="habit-level">Lvl {habit.attr('level')}</div>
+        <div className="habit-bar-container">
+          <div className={progressClasses} style={progressStyle}></div>
 
-        <div className={titleClasses}>
-          {habit.title}
+          <div className="valign-wrapper habit-level col-3">
+            <div className="valign-inner">Lvl {habit.attr('level')}</div>
+          </div>
+
+          <div className={titleClasses}>
+            <div className="valign-inner">{habit.title}</div>
+          </div>
+
+          <div className={habitIconClasses}>
+            <div className="valign-inner">
+              <div className="habit-icon-inner"></div>
+            </div>
+          </div>
         </div>
-        <div className={habitIconClasses}>
-          <div className="habit-icon-inner"></div>
-        </div>
+
         <HabitActionMenu id={habit.id} habitTitle={habit.title} hidden={_self.state.actionMenuHidden}/>
       </div>;
     }

@@ -69,8 +69,10 @@
 
     if (domain === 'prod') {
       config = facebookConfigProd; 
+      console.log('FB prod');
     } else if (domain === 'devo') {
       config = facebookConfigDevo; 
+      console.log('FB devo');
     }
 
     FB.init(config); 
