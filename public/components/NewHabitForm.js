@@ -11,6 +11,7 @@
 
     toggleFormVisibility: function() {
       this.setState({'formHidden': !!!this.state.formHidden});
+      this.refs.title.getDOMNode().focus();
     },
 
     formIsValid: function() {
@@ -92,12 +93,6 @@
     expandFormButtonClicked: function() {
       // Show the form and focus on the title field
       this.toggleFormVisibility();
-
-      // TODO: Smarter way of delaying focus; this is
-      // a potential race condition
-      setTimeout(function() {
-        this.refs.title.getDOMNode().focus();
-      }.bind(this), 50);
     },
 
     collapseFormButtonClicked: function() {
@@ -119,10 +114,11 @@
         'form-btn' : true, 
         'disabled' : !this.formIsValid()
       });
-	var showFreqTypes = {days: 'days', hours: 'hrs', minutes: 'mins'};
+
+	    var showFreqTypes = {days: 'days', hours: 'hrs', minutes: 'mins'};
       var freqTypes = ['days','hours','minutes'].map(function(type) {
         var checked = (type === _self.state.freqType);
-        return <span key={type}><input type="radio" ref="freqType" defaultChecked={checked}
+        return <span key={type} className="freq-type"><input type="radio" ref="freqType" defaultChecked={checked}
         value={type} name="freqType"/>{showFreqTypes[type]}</span>;
       });
 

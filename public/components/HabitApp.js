@@ -43,8 +43,8 @@
       });
     },
     render: function() {
-      var habits = this.state.habits.sort(sortHabits).map(function(h) {
-        return <Habit habit={h}/>;
+      var habits = this.state.habits.sort(sortHabits).map(function(h, i) {
+        return <Habit habit={h} key={i}/>;
       });
 
       return <div>

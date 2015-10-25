@@ -76,3 +76,8 @@ body, html {
 .hidden {
   display: none !important;
 }
+
+.clearfix {
+  display: table;
+  clear: both;
+}

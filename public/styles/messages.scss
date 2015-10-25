@@ -1,27 +1,64 @@
+$message-bar-height: 5rem;
+
 .messages-wrapper li {
   display: block;
 }
 
-.messages-wrapper {
-  background-color: #f6f7f8;
-  position: fixed;
-  opacity: 0;
-  z-index: 3;
-  right: .5em;
-  bottom: .5em;
+.icon {
+  max-width: 100%;
+}
 
-  transition: all ease .5s;
-  max-width: 20em;
+.messages-container {
+  opacity: 0;
+  position: fixed;
+  left: 0em;
+  bottom: -$message-bar-height;
   width: 100%;
+  height: $message-bar-height;
+  background-color: #f6f7f8;
+  border-top: solid #5E9DC8 1px;
+  z-index: 3;
+  transition: all ease 1s;
+
+  -webkit-box-shadow: 0 4px 4px -2px #000000;
+  -moz-box-shadow: 0 4px 4px -2px #000000;
+  box-shadow: 0 4px 4px -2px #000000;
+}
+
+.messages-container:before {
+  content: "";
+  position: relative;
+  top: 0px;
+  display: block;
+  left: 0;
+  width: 100%;
+  height: .05em;
+  -webkit-box-shadow: 0 0 10px rgba(0,0,0,.8);
+  -moz-box-shadow: 0 0 10px rgba(0,0,0,.8);
+  box-shadow: 0 0 10px rgba(0,0,0,.8);
+  z-index: 100;
+}
+
+.message-container-show {
+  opacity: 1;
+  bottom: 0;
+}
+
+.message-icon-wrapper {
+  height: $message-bar-height;
+}
+
+.messages-wrapper {
+  transition: all ease .5s;
+  width: 100%;
+  height: inherit;
   overflow: hidden;
   padding: 1em;
-  height: 6em;
   display: block;
 
   color: #000;
   font-size: .9em;
-  border: solid #5E9DC8 2px;
-  border-radius: .5em;
+  border-radius: .15em;
   margin-top: 0;
   margin-bottom: 0;
 }

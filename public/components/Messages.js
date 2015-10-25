@@ -3,15 +3,36 @@
 
   var Messages = exports.Messages = React.createClass({
     render: function() {
-      var _self = this;
-      var listItems = this.props.queue.map(function(el, i) {
-        return <li key={i}>{el.content}</li>;
-      });
-      var classes = U.getClassStr({
+
+      let listItems = this.props.queue.map((el,i) => <li key={i}>{el.content}</li>);
+      let showMessages = this.props.queue[0] !== undefined;
+
+      let classes = U.getClassStr({
         'messages-wrapper' : true, 
-        'messages-show' : _self.props.queue[0] !== undefined
+        'messages-show' : showMessages
       }); 
-      return <ul className={classes}>{listItems}</ul>;
+
+      let containerClasses = U.getClassStr({
+        'messages-container' : true,
+        'message-container-show' : showMessages
+      });
+
+      return (<div className={containerClasses}>
+        <div className="main-content grid">
+          <div className="col-2 message-icon-wrapper">
+            <div className="valign-wrapper">
+              <div className="valign-inner">
+                <img src="https://cdn2.iconfinder.com/data/icons/life-moments/566/fireworks-512.png" className="icon"/>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-10 col-last">
+            <ul className={classes}>{listItems}</ul>
+          </div>
+          <div className="clearfix"></div>
+        </div>
+      </div>);
     }
   });
 

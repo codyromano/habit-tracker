@@ -89,7 +89,7 @@
           <div className={progressClasses} style={progressStyle}></div>
 
           <div className="valign-wrapper habit-level col-3">
-            <div className="valign-inner">Lvl {habit.attr('level')}</div>
+            <div className="valign-inner"><span className="lvl-text">Lvl</span> {habit.attr('level')}</div>
           </div>
 
           <div className={titleClasses}>

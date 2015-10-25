@@ -26,6 +26,7 @@
   line-height: 100%;
   font-weight: bold;
   font-size: 1em;
+  -webkit-font-smoothing: antialiased;
 }
 
 .demote .habit-title {
@@ -40,7 +41,6 @@
 /* Add space around actions bar to prevent accidental taps */
 .habit-actions {
   background-color: #f6f7f8;
-  background-image: url(/rsrc.php/v2/y1/r/wL6VQj7Ab77.png);
   background-repeat: repeat-x;
   border-radius: 2px;
   box-shadow: 0 .15em 1px rgba(0, 0, 0, .05);
@@ -83,6 +83,12 @@
   top: .35em;
   padding-left: 2em;
   opacity: .6;
+}
+
+@media (max-width: 40rem) {
+  .lvl-text {
+    font-size: .75em;
+  }
 }
 
 $trophy-icon-size: 1em;
