@@ -85,8 +85,13 @@
   opacity: .6;
 }
 
+.lvl-text {
+  font-size: .9em;
+}
+
 @media (max-width: 40rem) {
   .lvl-text {
+    display: block;
     font-size: .75em;
   }
 }

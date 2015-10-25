@@ -1,10 +1,6 @@
 (function(exports, PubSub, UserStore, $, config) {
   'use strict';
 
-  if (localStorage) {
-    localStorage.removeItem('habits');
-  }
-
   var profile = UserStore.getProfile(); 
 
   PubSub.subscribe('userProfileChanged', function(newProfile) {
@@ -102,20 +98,6 @@
       */
     }
   };
-
-  // Debugging level cap system
-  function logLevelCaps(startLevel, maxLevel, fn) {
-    var level = startLevel,
-        newCap,
-        prevCap = 0; 
-
-    while (level < maxLevel) {
-      console.log('New points required to reach lvl %s: ', 
-      level + 1, fn(level) - prevCap);
-      prevCap = fn(level);
-      ++level;
-    }
-  }
 
   var HabitStore = exports.HabitStore = {}; 
   var habits = [];
@@ -365,5 +347,11 @@
   });
 
   HabitStore.getHabits = getHabits; 
+
+  HabitStore.getShowableHabits = function() {
+    return HabitStore.getHabits().filter(function(h) {
+      return h.deleted !== true;
+    });
+  };
 
 })(window, PubSub, UserStore, jQuery, config); 

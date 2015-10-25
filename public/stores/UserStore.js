@@ -20,6 +20,11 @@
     return Math.max(levelSum - totalHabits, 1);
   }
 
+  UserStore.getLifeScoreRequiredForNewHabit = function(totalHabits) {
+    // Subtract a fixed integer to make it easier in the beginning
+    return Math.max(1, Math.round(Math.pow(totalHabits, 1.3) - 6));
+  };
+
   // Return a specific attribute or the whole object
   UserStore.getProfile = function(key) {
     return user[key] || user; 

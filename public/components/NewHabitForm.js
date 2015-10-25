@@ -1,4 +1,4 @@
-(function(exports, React, U) {
+(function(exports, React, UserStore, HabitStore, U) {
   'use strict';
 
   var NewHabitForm = exports.NewHabitForm = React.createClass({
@@ -10,8 +10,16 @@
     },
 
     toggleFormVisibility: function() {
+      /* Don't expand the new habit button if the user hasn't 
+      met the Life Score requirement for adding a new habit */
+      if (this.state.formHidden && !this.checkLifeScoreReq()) {
+        return;
+      }
+
       this.setState({'formHidden': !!!this.state.formHidden});
-      this.refs.title.getDOMNode().focus();
+      if (!this.state.formHidden) {
+        this.refs.title.getDOMNode().focus();
+      }
     },
 
     formIsValid: function() {
@@ -58,7 +66,38 @@
       });
     },
 
+    checkLifeScoreReq: function() {
+      var allHabits = HabitStore.getShowableHabits(),
+          lifeScore = UserStore.getProfile().lifeScore,
+          newHabitNumber = allHabits.length + 1;
+
+      var notLoggedIn = (isNaN(parseInt(lifeScore)) || lifeScore < 1); 
+
+      if (notLoggedIn) {
+        return true;
+      }
+
+      let scoreRequired = UserStore.getLifeScoreRequiredForNewHabit(newHabitNumber);
+
+      if (scoreRequired > lifeScore) {
+        let extraRequired = scoreRequired - lifeScore;
+
+        // TODO: Function for pluralizing nouns
+        let extraNotice = extraRequired + ' more ' + 
+          ((extraRequired > 1) ? 'points' : 'point');
+
+        PubSub.publish('messageAdded', 'You need a Life Score of ' + scoreRequired +
+         ' (' + extraNotice + ') to add another habit. Mark habits as done to boost' +
+         ' your Life Score.', 8000);
+        return false;
+      }
+      return true; 
+    },
+
     onFormSubmit: function() {
+      if (!this.checkLifeScoreReq()) {
+        return;
+      }
       if (!this.formIsValid()) {
         return PubSub.publish('messageAdded', 'Please fill out everything.', 2000);
       }
@@ -153,4 +192,4 @@
     }
   });
 
-})(window, React, U); 
+})(window, React, UserStore, HabitStore, U); 
