@@ -8,21 +8,15 @@
       };
     },
 
-    componentDidMount: function() {
-      if (this.refs.addHabitLink) {
-        let addHabitLink = this.refs.addHabitLink.getDOMNode();
-
-        addHabitLink.addEventListener('click', function() {
-          PubSub.publish('addHabitButtonClicked');
-        }, false);
-      }
+    habitButtonClicked: function() {
+      PubSub.publish('addHabitButtonClicked');
     },
 
     getAddHabitLink: function() {
       var link = '';
       if (this.props.user.name) {
         link = (<a href="#" ref="addHabitLink" 
-        className="main-header-link"><span>Add Habit</span></a>);
+        className="main-header-link" onClick={this.habitButtonClicked}><span>Add Habit</span></a>);
       }
       return link;
     },

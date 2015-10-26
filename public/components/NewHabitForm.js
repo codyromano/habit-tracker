@@ -10,16 +10,24 @@
     },
 
     toggleFormVisibility: function() {
+      var _self = this; 
+
       /* Don't expand the new habit button if the user hasn't 
       met the Life Score requirement for adding a new habit */
       if (this.state.formHidden && !this.checkLifeScoreReq()) {
         return;
       }
 
+      let titleNode = this.refs.title.getDOMNode();
       this.setState({'formHidden': !!!this.state.formHidden});
-      if (!this.state.formHidden) {
-        this.refs.title.getDOMNode().focus();
-      }
+
+      /* TODO: Replace this arbitrary timeout with logic to focus the 
+      title input only after the initial render of the form has completed.
+      Calling it here without a timeout doesn't work because the focus/blur
+      call is made before the element is completely rendered. */
+      setTimeout(function() {
+        (_self.state.formHidden) ? titleNode.blur() : titleNode.focus();
+      }, 500);
     },
 
     formIsValid: function() {

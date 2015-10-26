@@ -37,8 +37,6 @@ function User(appConfig, db, id, profile) {
       newItem.Item[attrName] = {'S' : record[attrName]};
     }
 
-    console.log('record: ', JSON.stringify(record));
-
     return new Promise(function(resolve, reject) {
       db.putItem(newItem, resolve, reject);
     });
