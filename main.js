@@ -29,6 +29,10 @@ var bodyParser = require('body-parser'),
 // Databases
 var AWS = require('aws-sdk');
 
+// Models
+var User = require('./models/User'),
+    user;
+
 // App routes 
 var Habit = require('./habit');
 var habit = new Habit();
@@ -43,6 +47,7 @@ AWS.config.update({
   region: config.AWS_REGION
 });
 var db = new AWS.DynamoDB({region: config.AWS_REGION});
+
 
 // Configure express server
 var app = express();
@@ -63,20 +68,20 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 // Designate 'public' as a static directory
 app.use(express.static('public'));
 
+app.get('/welcome', function(req, res) {
+  // TODO: Show a welcome screen for non-logged-in users
+  res.render('index', {user: req.user});
+});
+
 // Treat '/' as equivalent to 'public/index.html'
-app.get('/', function(req, res) {
-  if (req.user && req.user.photos) {
-    req.user.profilePhoto = req.user.photos[0].value;
-  }
+app.get('/', ensureAuthenticated, function(req, res) {
+  user = new User(config, db, req.user.id, req.user);
+  user.save();
   res.render('index', {user: req.user});
 });
 
 app.get('/account', ensureAuthenticated, function(req, res){
   // TODO: Implement this as part of the upcoming user profile feature
-});
-
-app.get('/login', function(req, res){
-  res.render('login', { user: req.user });
 });
 
 app.get('/auth/facebook',
@@ -99,6 +104,8 @@ function ensureAuthenticated(req, res, next) {
 }
 
 app.post('/api/habits/', habit.saveAll.bind(undefined, config, db));
-app.get('/api/habits/:id', habit.getAll.bind(undefined, config, db)); 
+app.get('/api/habits/:id', function(req, res) {
+  habit.getAll(config, user, db, req, res); 
+});
 
 module.exports = app;

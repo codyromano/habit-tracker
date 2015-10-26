@@ -9,18 +9,30 @@
     },
 
     componentDidMount: function() {
-      var _self = this,
-          addHabitLink = this.refs.addHabitLink.getDOMNode();
+      if (this.refs.addHabitLink) {
+        let addHabitLink = this.refs.addHabitLink.getDOMNode();
 
-      addHabitLink.addEventListener('click', function() {
-        PubSub.publish('addHabitButtonClicked');
-      }, false);
+        addHabitLink.addEventListener('click', function() {
+          PubSub.publish('addHabitButtonClicked');
+        }, false);
+      }
+    },
+
+    getAddHabitLink: function() {
+      var link = '';
+      if (this.props.user.name) {
+        link = (<a href="#" ref="addHabitLink" 
+        className="main-header-link"><span>Add Habit</span></a>);
+      }
+      return link;
     },
 
     render: function() {
+      var addHabitLink = this.getAddHabitLink();
+
       return (<header className="primary-header">
         <div className="main-content">
-          <a href="#" ref="addHabitLink" className="main-header-link"><span>Add Habit</span></a>
+          {addHabitLink}
           <ProfileIcon user={this.props.user}/>
         </div>
       </header>);

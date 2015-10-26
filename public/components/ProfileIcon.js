@@ -27,7 +27,7 @@
       } else {
         profileContents = (<div>
           <a href="/auth/facebook/" className="main-header-link main-header-link-right">
-          <span>Login</span></a>
+          <span>Sign In</span></a>
         </div>);
       }
 

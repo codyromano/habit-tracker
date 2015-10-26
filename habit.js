@@ -6,7 +6,7 @@ function toString(any) {
   return '' + any; 
 }
 
-proto.getAll = function(config, db, req, res) {
+proto.getAll = function(config, user, db, req, res) {
   var userId = toString(req.params.id); 
 
   var params = {
