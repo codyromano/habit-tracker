@@ -70,7 +70,7 @@ app.use(express.static('public'));
 
 app.get('/welcome', function(req, res) {
   // TODO: Show a welcome screen for non-logged-in users
-  res.render('index', {user: req.user});
+  res.render('index', {user: {}});
 });
 
 // Treat '/' as equivalent to 'public/index.html'
@@ -98,13 +98,22 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 
-function ensureAuthenticated(req, res, next) {
+function ensureAPIAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
-  res.redirect('/auth/facebook')
+  var errorObj = {success: false, message: 'This API method requires login'};
+  res.send(JSON.stringify(errorObj));
 }
 
-app.post('/api/habits/', habit.saveAll.bind(undefined, config, db));
-app.get('/api/habits/:id', function(req, res) {
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/welcome')
+}
+
+app.post('/api/habits/', ensureAPIAuthenticated, function(req, res) {
+  habit.saveAll.bind(config, user, db, req, res);
+});
+
+app.get('/api/habits/:id', ensureAPIAuthenticated, function(req, res) {
   habit.getAll(config, user, db, req, res); 
 });
 

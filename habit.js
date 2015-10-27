@@ -7,33 +7,34 @@ function toString(any) {
 }
 
 proto.getAll = function(config, user, db, req, res) {
-  var userId = toString(req.params.id); 
+
+  var userId = user.getProfile().userID;
 
   var params = {
     AttributesToGet: ['content'],
     TableName: config.AWS_HABITS_TABLE,
     Key: {
-      userId: {"S" : userId},
+      userId: {"S" : toString(userId)},
       title: {"S" : "all-user-habits"}
     }
   };
 
   function onResponse(err, data) {
-    var result; 
-
     if (err) {
       result = {success: false, message: 'Could not query all user habits'};
     } else if (data) {
       result = {success: true, message: 'Query successful', content: data.Item.content.S};
     }
-
     res.send(JSON.stringify(result));
   }
 
   db.getItem(params, onResponse); 
 };
 
-proto.saveAll = function(config, db, req, res) {
+proto.saveAll = function(config, user, db, req, res) {
+
+  var userId = user.getProfile().userID;
+
   var newItem = {
     TableName: config.AWS_HABITS_TABLE,
     Item: {

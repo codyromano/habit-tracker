@@ -19,13 +19,27 @@
     },
 
     componentDidMount: function() {
-      var id = this.props.habit.attr('id'); 
+      var id = this.props.habit.attr('id'),
+          _self = this;
+
+      /* toggledId is the id of the parent habit of the menu that 
+      is going to appear */
+      PubSub.subscribe('actionMenuWillAppear', function(toggledId) {
+        if (toggledId !== id) {
+          _self.setState({actionMenuHidden: true});
+        }
+      });
 
       setInterval(this.getTimeRemaining, 1000);
       PubSub.subscribe('habitHasPendingDemotion:' + id, this.onHabitDemoted);
     },
 
     toggleActionMenu: function() {
+      var id = this.props.habit.attr('id');
+
+      /* Instruct other menus to hide themselves because 
+      this menu is going to open */
+      PubSub.publish('actionMenuWillAppear', id);
       this.setState({actionMenuHidden: !!!this.state.actionMenuHidden});
     },
 
