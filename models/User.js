@@ -20,7 +20,11 @@ function User(appConfig, db, id, profile) {
   };
 
   this.getProfile = function() {
-    return attrs;
+    return new Promise(function(resolve, reject) {
+      /* getProfile() returns a promise because it is likely 
+      to be asynchronous, involving a request to DynamoDB, in the future. */
+      resolve(attrs);
+    });
   };
 
   this.save = function() {

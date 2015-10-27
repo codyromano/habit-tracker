@@ -110,11 +110,15 @@ function ensureAuthenticated(req, res, next) {
 }
 
 app.post('/api/habits/', ensureAPIAuthenticated, function(req, res) {
-  habit.saveAll.bind(config, user, db, req, res);
+  habit.saveAll(config, user, db, req, res);
 });
 
-app.get('/api/habits/:id', ensureAPIAuthenticated, function(req, res) {
+app.get('/api/habits/(:id)', ensureAPIAuthenticated, function(req, res) {
   habit.getAll(config, user, db, req, res); 
+});
+
+app.get('/api/user/', ensureAPIAuthenticated, function(req, res) {
+  // TODO: Output the profile of the user who's currently logged in
 });
 
 module.exports = app;
