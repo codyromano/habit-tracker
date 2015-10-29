@@ -19,11 +19,48 @@ function User(appConfig, db, id, profile) {
     profilePhoto: null
   };
 
-  this.getProfile = function() {
+  this.attributesLoaded = function() {
+    // TODO: Make this check more concise using all() and isString()
+    return (typeof attrs.name === 'string' && 
+      typeof attrs.email === 'string' && 
+      typeof attrs.profilePhoto === 'string');
+  };
+
+  this.getProfile = function(useCache) {
+    var _self = this; 
+
     return new Promise(function(resolve, reject) {
-      /* getProfile() returns a promise because it is likely 
-      to be asynchronous, involving a request to DynamoDB, in the future. */
-      resolve(attrs);
+
+      if (useCache === true && _self.attributesLoaded()) {
+        console.info('Using cached user attributes');
+        resolve(attrs);
+        return; 
+      }
+
+      // If we're not using cached data, fetch from DynamoDB
+      var params = {
+        AttributesToGet: ['name','email','profilePhoto'],
+        TableName: appConfig.AWS_USERS_TABLE,
+        Key: {
+          userID: {"S" : attrs.userID}
+        }
+      };
+
+      db.getItem(params, function(err, data) {
+
+        if (err) {
+          console.error(err);
+          reject(err);
+          return;
+        }
+
+        // Update the user instance using the server record
+        attrs.name = data.Item.name.S;
+        attrs.email = data.Item.email.S;
+        attrs.profilePhoto = data.Item.profilePhoto.S;
+
+        resolve(attrs);
+      });
     });
   };
 

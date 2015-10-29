@@ -118,7 +118,9 @@ app.get('/api/habits/(:id)', ensureAPIAuthenticated, function(req, res) {
 });
 
 app.get('/api/user/', ensureAPIAuthenticated, function(req, res) {
-  // TODO: Output the profile of the user who's currently logged in
+  user.getProfile().then(function(user) {
+    res.send(JSON.stringify(user));
+  });
 });
 
 module.exports = app;
