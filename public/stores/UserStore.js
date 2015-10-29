@@ -1,4 +1,4 @@
-(function(exports, PubSub) {
+(function(exports, PubSub, Ajax) {
 
   var UserStore = exports.UserStore = {}; 
 
@@ -54,4 +54,15 @@
     updateProfile({lifeScore: score});
   });
 
-})(window, PubSub); 
+  var userRecord = Ajax.send('/api/user/', 'GET');
+  userRecord.then(function(response) {
+    if (response.userID) {
+      PubSub.publish('userAuthenticated', {
+        id: response.userID,
+        name: response.name,
+        profilePicture: response.profilePhoto
+      });
+    }
+  });
+
+})(window, PubSub, Ajax); 

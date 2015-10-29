@@ -1,5 +1,4 @@
-(function(exports, PubSub, U) {
-
+ (function(exports, PubSub, U) {
   var FBUserStore = exports.FBUserStore = {};
 
   var facebookConfigProd = {
@@ -15,44 +14,7 @@
     version    : 'v2.2' 
   };
 
-  /**
-  * @returns {Object} User full name and Facebook ID
-  */
-  function getBasicProfile(resultObj) {
-    resultObj = resultObj || {}; 
-
-    return new Promise(function(resolve, reject) {
-      FB.api('/me', function(response) {
-        resultObj = U.extend(resultObj, response);
-        resolve(response);
-      });
-    });
-  }
-
-  function getProfilePic(resultObj) {
-    resultObj = resultObj || {}; 
-
-    return new Promise(function(resolve, reject) {
-      FB.api('/me/picture', function(response) {
-        resultObj.profilePicture = response.data.url; 
-
-        if (response && !response.error) {
-          resolve(resultObj); 
-        } else {
-          reject(resultObj);
-        }
-      });
-    });
-  }
-
   function statusChangeCallback(response) {
-    if (response.status === 'connected') {
-      getBasicProfile()
-        .then(getProfilePic)
-        .then(function(profile) {
-          PubSub.publish('userAuthenticated', profile);
-        });
-    }
     /* TODO: Handle the scenario of a user logging out
     on Facebook.com and returning to Habit Tracker. Application
     state needs to be updated for this in several areas. */
@@ -79,7 +41,7 @@
     });
   };
 
-  // Facebook SDK
+  // Load Facebook SDK
   (function(d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) return;

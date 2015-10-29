@@ -30,6 +30,7 @@ var jsFiles = [
   'public/thirdparty/es5-sham.min.js',
   'public/thirdparty/react.js',
   'public/publicConfig.js',
+  'public/utils/Ajax.js',
   'public/utils/U.js',
   'public/utils/PubSub.js',
   'public/stores/UserStore.js',
