@@ -7,6 +7,23 @@
     profile = newProfile;
   });
 
+  /**
+  TODO: Replace POST request in 'sync' with the method below.
+  This method is safer and more efficient because it only affects
+  a single record, but I need to do prepare a few other routes before
+  migrating to this approach.
+  **/ 
+  /*
+  function testPostHabit() {
+    $.post("/api/habit/", {
+      userID: 100,
+      title: 'My new habit',
+      content: 'My habit content',
+      freq: 60000
+    });
+  }
+  */
+
   function sync(profileId) {
 
     new Promise(function(resolve, reject) {

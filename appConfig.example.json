@@ -1,6 +1,7 @@
 {
   "AWS_REGION": "us-west-2",
   "AWS_HABITS_TABLE": "habits",
+  "AWS_HABITS_TABLE_V2" : "user-habits",
   "AWS_USERS_TABLE": "users",
   "AWS_ACCESS_KEY_ID": "[YOUR KEY]",
   "AWS_SECRET_ACCESS_KEY": "[YOUR KEY]",
