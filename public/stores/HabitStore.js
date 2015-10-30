@@ -7,27 +7,8 @@
     profile = newProfile;
   });
 
-  /**
-  TODO: Replace POST request in 'sync' with the method below.
-  This method is safer and more efficient because it only affects
-  a single record, but I need to do prepare a few other routes before
-  migrating to this approach.
-  **/ 
-  /*
-  function testPostHabit() {
-    $.post("/api/habit/", {
-      userID: 100,
-      title: 'My new habit',
-      content: 'My habit content',
-      freq: 60000
-    });
-  }
-  */
-
   function sync(profileId) {
-
     new Promise(function(resolve, reject) {
-
       $.get("/api/habits/" + profileId, function(response) {
         try {
           response = JSON.parse(response);
@@ -44,77 +25,10 @@
       habits = pruneOldItems(habits, habitsFromServer).map(addUtils);
       PubSub.publish('habitListChanged', habits);
 
-      var dbItem = {
-        userId: profileId,
-        title: 'all-user-habits',
-        content: JSON.stringify(habits)
-      };
-
-      return new Promise(function(resolve, reject) {
-        $.post( "/api/habits/", dbItem)
-          .done(resolve)
-          .error(reject);
-      });
     }).then(function() {
       setTimeout(sync.bind(undefined, profileId), 7000);
     });
   }
-
-  // TODO: Move this into its own file
-  var DB = exports.DB =  {
-    remoteSaveInProgress: false,
-    remoteSaveTimeout: null,
-    remoteSaveRetry: 5000,
-    lastRemoteSave: new Date().getTime(),
-
-    requestRemoteSave: function(profileId, stringVal) {
-      var _self = this; 
-      var dbItem = {
-        userId: profileId,
-        title: 'all-user-habits',
-        content: stringVal
-      };
-      var rateLimitOK = new Date().getTime() - this.lastRemoteSave
-         >= this.remoteSaveRetry;
-
-      // Backoff and retry if a save is in progress
-      if (this.remoteSaveInProgress || !rateLimitOK) {
-        clearTimeout(this.remoteSaveTimeout); 
-        this.remoteSaveTimeout = setTimeout(function() {
-          _self.requestRemoteSave(profileId, stringVal); 
-        }, this.remoteSaveRetry);
-        return;
-      }
-
-      this.remoteSaveInProgress = true; 
-
-      if (!dbItem.content || !dbItem.content.length) {
-        throw new Error('No content to POST');
-      }
-    },
-
-    /** 
-    * @returns {boolean}
-    */
-    save: function(key, value) {
-      var _self = this, 
-          dbItem, ajax, 
-          valueAsString = JSON.stringify(value);
-
-      if (profile.id) {
-        this.requestRemoteSave(profile.id, valueAsString); 
-      }
-      return this.get(key) !== false;  
-    }, 
-    /**
-    * @returns {object|boolean}
-    */
-    get: function(key) {
-      /**
-      * @todo Update or remove method
-      */
-    }
-  };
 
   var HabitStore = exports.HabitStore = {}; 
   var habits = [];
@@ -183,7 +97,7 @@
 
     updateHabits({id: habit.id}, function(habit) {
       newLevel = ++habit.level;
-      saveHabits();
+      
       PubSub.publish('habitsListChanged', getHabits());
       return habit;
     });
@@ -225,7 +139,7 @@
       result = result || h; 
       return addUtils(result);
     });
-    saveHabits();
+    //
     PubSub.publish('habitListChanged', habits); 
     return updated; 
   }
@@ -283,7 +197,6 @@
           3000); 
       }
 
-      saveHabits();
       PubSub.publish('habitListChanged', habits);
       return habit; 
     });
@@ -303,7 +216,7 @@
 
     if (recordDeleted) {
       PubSub.publish('habitListChanged', getHabits());
-      saveHabits();
+      
     }
     return recordDeleted;
   }
@@ -319,11 +232,10 @@
     PubSub.publish('messageAdded', 'You have ' + time + ' ' + habit.freqType +
      ' to ' + habit.title + '! Tap the progress bar when you\'re done.', 8000);
 
-    saveHabits();
-  }
-
-  function saveHabits() {
-    DB.save('habits', habits);
+    $.post("/api/habit/", {
+      content: habit.title, 
+      freq: habit.freq
+    });
   }
 
   function toHashTable(objectArray, keyProperty) {

@@ -167,7 +167,7 @@ proto.save = function(config, user, db, req, res) {
 
     var itemContent = getDynamoItem({
       habitID: generateHabitID(profile.userID),
-      ownerID: profile.userID,
+      ownerID: parseInt(profile.userID),
       content: req.body.content,
       timeLastUpdated: currentTime,
       timeCreated: currentTime,
