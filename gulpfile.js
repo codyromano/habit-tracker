@@ -19,6 +19,7 @@ var jsxFiles = [
   'public/components/Messages.js',
   'public/components/ProfileIcon.js',
   'public/components/HabitHeader.js',
+  'public/components/LandingPage.js',
   'public/components/HabitApp.js'
 ];
 

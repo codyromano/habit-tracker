@@ -47,13 +47,26 @@
         return <Habit habit={h} key={i}/>;
       });
 
+      // Show the welcome landing page unless the user is logged in
+      var mainContent = (<LandingPage/>);
+
+      /* TODO: Must add React Router for organization
+      this won't be sustainable as more pages are added */
+      if (this.props.user) {
+        mainContent = (
+          <div>
+          <NewHabitForm/>
+            <div className="main-content">
+              <div>{habits}</div>
+            </div>
+            <Messages queue={this.state.queue}/>
+          </div>
+        );
+      }
+
       return <div>
         <HabitHeader user={this.props.user}/>
-        <NewHabitForm/>
-        <div className="main-content">
-          <div>{habits}</div>
-        </div>
-        <Messages queue={this.state.queue}/>
+        {mainContent}
       </div>;
     }
   });
