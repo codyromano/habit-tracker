@@ -8,6 +8,13 @@
     return el;
   };  
 
+  U.mapKeyValues = function(object, fn) {
+    for (var key in object) {
+      object[key] = fn(key, object[key]);
+    }
+    return object; 
+  };
+
   U.ordinalSuffix = function(i) {
     var j = i % 10,
         k = i % 100;
@@ -133,5 +140,6 @@
     }
     return result[0] ? result.join(' ') : ''; 
   };
+
 
 })(window);

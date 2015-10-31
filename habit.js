@@ -109,7 +109,6 @@ console.assert(getDynamoCode('foo') === 'S');
 console.assert(getDynamoCode(42) === 'N'); 
 console.assert(getDynamoCode([42,42]) === 'NS');
 
-
 function getDynamoItem(params) {
   var paramValue, dataTypeCode, typeValuePair; 
 
@@ -132,6 +131,54 @@ function getDynamoItem(params) {
   }
   return params;
 }
+
+function mapKeyValues(object, fn) {
+  for (var key in object) {
+    object[key] = fn(key, object[key]);
+  }
+  return object; 
+}
+
+/**
+* @desc Dynamo returns items with a code for each type. E.g. 
+* "userID" : {"N" : 123}. This function removes that unnecessary data.
+*/
+function parseDynamoQueryItem(item) {
+  return mapKeyValues(item, function(key, dynamoTypeObject) {
+    var value;
+    for (var dataTypeCode in dynamoTypeObject) {
+      value = dynamoTypeObject[dataTypeCode];
+      return (dataTypeCode === 'N') ? parseFloat(value) : value;
+    }
+  });
+}
+
+proto.get = function(config, user, db, req, res) {
+
+  user.getProfile().then(function(profile) {
+    var params = {
+      TableName : config.AWS_HABITS_TABLE_V2,
+      Select : "ALL_ATTRIBUTES",
+      KeyConditions : {
+        "ownerID" : {
+          AttributeValueList: [
+            {"N" : toString(profile.userID)}
+          ],
+          ComparisonOperator: "EQ"
+        }
+      }
+    };
+
+    db.query(params, function(err, data) {
+      if (err) {
+        printResponse(res, false, 'Query failed');
+      } else {
+        printResponse(res, true, 'Query succeeded',
+          JSON.stringify(data.Items.map(parseDynamoQueryItem)));
+      }
+    });
+  });
+};
 
 /**
 * @desc Save a single habit record to Dynamo
@@ -201,5 +248,38 @@ proto.saveAll = function(config, user, db, req, res) {
     db.putItem(newItem, onSuccess, onFailure);
   });
 };
+
+/* A few basic assertions. I'll eventually migrate them into
+a full-fledged testing framework for Node / React: */
+
+/**
+* @desc Assertions for parseDynamoQueryItem
+*/
+(function() {
+  var testItem = {
+    "content" : {"S" : "My content"},
+    "userID" : {"N" : "1234"}
+  };
+
+  var result = parseDynamoQueryItem(testItem);
+
+  console.assert(result.content === 'My content', 
+    'parseDynamoQueryItem method removes Dynamo data type code');
+
+  console.assert(result.userID === 1234, 'Parses number-type ' +
+    'results as numbers');
+})();
+
+/**
+* @desc Assertions for mapKeyValues
+*/
+(function() {
+  var testObj = {name: 'Romano'},
+      testFn = function(key, value) { return 'Mr. ' + value; },
+      result = mapKeyValues(testObj, testFn);
+
+  console.assert(result.name === 'Mr. Romano', 
+    'Mapping function applied to key/value pair')
+})();
 
 module.exports = Habit;
