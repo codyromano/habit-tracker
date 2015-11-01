@@ -165,10 +165,8 @@ proto.remove = function(config, user, db, req, res) {
     };
     db.deleteItem(params, function(err, data) {
         if (err) { 
-          console.log(err); 
           printResponse(res, false, 'Removal failed');
         } else {
-          console.log(data); // successful response
           printResponse(res, true, 'Removal succeeded');
         }
     });
@@ -255,10 +253,6 @@ proto.save = function(config, user, db, req, res) {
   }
 
   user.getProfile().then(function(profile) {
-    // Callbacks for Dynamo success or failure
-    var onSuccess = printResponse.bind(undefined, res, true, 'Saved record'),
-    onFailure = printResponse.bind(undefined, res, false, 'Save failed');
-
     /* Determine if the habit frequency should be 
     described in minutes, hours or days, depending on
     the number of milliseconds */
@@ -274,8 +268,10 @@ proto.save = function(config, user, db, req, res) {
       freqType = 'days';
     }
 
+    var habitID = generateHabitID(profile.userID);
+
     var itemContent = getDynamoItem({
-      habitID: generateHabitID(profile.userID),
+      habitID: habitID,
       ownerID: parseInt(profile.userID),
       content: req.body.content,
       timeLastUpdated: currentTime,
@@ -290,6 +286,11 @@ proto.save = function(config, user, db, req, res) {
       TableName: config.AWS_HABITS_TABLE_V2,
       Item: itemContent
     };
+
+    var onSuccess = printResponse.bind(undefined, res, 
+      true, 'Save passed', {habitID: habitID});
+    var onFailure = printResponse.bind(undefined, res, false, 'Save failed');
+
     db.putItem(newItem, onSuccess, onFailure);
   });
 };

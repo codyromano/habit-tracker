@@ -124,7 +124,7 @@
         id: U.unique(),
         level: 1,
         pendingDemotions: 0, 
-        title: U.abbrev(this.state.title, 30),
+        content: U.abbrev(this.state.title, 30),
         freq: freq,
         freqType: this.state.freqType,
         lastTap: now,

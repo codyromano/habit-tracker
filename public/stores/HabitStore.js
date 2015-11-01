@@ -233,18 +233,23 @@
 
   function addHabit(habit) {
     var time = U.convertMs(habit.freq, habit.freqType);
-    habit.timeLastUpdated = new Date().getTime();
-    habit.version = config('version');
-
-    habits.push(habit);
-    PubSub.publish('habitListChanged', getHabits());
-
-    PubSub.publish('messageAdded', 'You have ' + time + ' ' + habit.freqType +
-     ' to ' + habit.title + '! Tap the progress bar when you\'re done.', 8000);
 
     $.post("/api/habit/", {
-      content: habit.title, 
+      content: habit.content, 
       freq: habit.freq
+    }).done(function(result) {
+      result = JSON.parse(result);
+
+      if (result.success === true) {
+        habit.habitID = result.content.habitID; 
+        habits.push(habit);
+
+        PubSub.publish('messageAdded', 'You have ' + time + ' ' + habit.freqType +
+        ' to ' + habit.content + '! Tap the progress bar when you\'re done.', 8000);
+      } else {
+        PubSub.publish('messageAdded', 'Sorry, I couldn\'t add your habit. '
+          + 'Please try again.', 4000);
+      }
     });
   }
 
@@ -265,7 +270,7 @@
 
   function pruneOldItems(versionA, versionB) {
     var result = [], newestItem;
-    var hashTable = toHashTable(versionA.concat(versionB), 'id');
+    var hashTable = toHashTable(versionA.concat(versionB), 'habitID');
 
     for (var key in hashTable) {
       newestItem = hashTable[key]
