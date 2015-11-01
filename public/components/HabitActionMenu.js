@@ -8,7 +8,7 @@
     },
 
     completeButtonPushed: function() {
-      PubSub.publish('habitCompleted', 'title', this.props.habitTitle);
+      PubSub.publish('habitCompleted', 'habitID', this.props.habitID);
     },
 
     render: function() {

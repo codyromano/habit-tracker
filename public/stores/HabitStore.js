@@ -1,14 +1,15 @@
 (function(exports, PubSub, UserStore, $, config) {
   'use strict';
 
+  var remoteSyncTimeout;
   var profile = UserStore.getProfile(); 
 
   PubSub.subscribe('userProfileChanged', function(newProfile) {
     profile = newProfile;
   });
 
-  function sync(profileId) {
-    new Promise(function(resolve, reject) {
+  function sync() {
+    return new Promise(function(resolve, reject) {
 
       $.get("/api/habit/", function(response) {
         try {
@@ -27,8 +28,6 @@
       habits = pruneOldItems(habits, habitsFromServer).map(addUtils);
       PubSub.publish('habitListChanged', habits);
 
-    }).then(function() {
-      setTimeout(sync.bind(undefined, profileId), 7000);
     });
   }
 
@@ -171,6 +170,9 @@
     query[uniqAttr] = uniqValue; 
 
     updateHabits(query, function(habit) {
+      if (!habit.habitID) {
+        throw new Exception('Missing habitID');
+      }
       var cap = nextLevelCap(habit.level),
           now = new Date().getTime(),
           newLevel; 
@@ -179,14 +181,12 @@
         demote(habit);
       }
 
-      habit.totalTaps+= 1;
-      habit.lastTap = now;
-
-      // Add this to the history of taps on the habit
-      if (!habit.taps) {
-        habit.taps = [];
-      }
-      habit.taps.push(now);
+      $.ajax({
+        type: 'PUT',
+        url: '/api/habit/' + habit.habitID + '/tap'
+      }).done(function() {
+        console.log(arguments); 
+      });
 
       if (readyForLevelUp(habit.level, habit.totalTaps)) {
         newLevel = levelUp(habit);

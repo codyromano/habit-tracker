@@ -109,8 +109,8 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/welcome')
 }
 
-app.post('/api/habits/', ensureAPIAuthenticated, function(req, res) {
-  habit.saveAll(config, user, db, req, res);
+app.put('/api/habit/:habitID/tap', ensureAPIAuthenticated, function(req, res) {
+  habit.addTap(config, user, db, req.params.habitID, req, res);
 });
 
 app.delete('/api/habit/:habitID', ensureAPIAuthenticated, function(req, res) {

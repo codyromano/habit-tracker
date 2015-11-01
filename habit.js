@@ -173,32 +173,33 @@ proto.remove = function(config, user, db, req, res) {
   });
 };
 
+/**
+* @desc Parse and add some metadata to a habit item
+* returned by Dynamo. 
+*/
+function prepareDynamoHabitItem(item) {
+  // Removes some Dynamo metadata not needed by the client
+  item = parseDynamoQueryItem(item);
+
+  /* TODO: Remove the following 2 legacy properties.
+  They're no longer used but expected by some methods. */
+  item.id = item.habitID; 
+  item.deleted = false;
+
+  /* Get items length here to save on front-end computation.
+  This property may already exist, but we want to ensure it's in
+  sync with the array of taps, which is the source of truth. */
+  item.totalItems = item.taps.length;
+  item.lastTap = item.taps[item.totalItems - 1];
+
+  /* TODO: This is a placeholder. I wrote a method to calculate 
+  level based on the 'taps' array. Just need to implement it here. */
+  item.level = 1;
+
+  return item;
+}
+
 proto.get = function(config, user, db, req, res) {
-  /**
-  * @desc Parse and add some metadata to a habit item
-  * returned by Dynamo. 
-  */
-  function prepareDynamoHabitItem(item) {
-    // Removes some Dynamo metadata not needed by the client
-    item = parseDynamoQueryItem(item);
-
-    /* TODO: Remove the following 2 legacy properties.
-    They're no longer used but expected by some methods. */
-    item.id = item.habitID; 
-    item.deleted = false;
-
-    /* Get items length here to save on front-end computation.
-    This property may already exist, but we want to ensure it's in
-    sync with the array of taps, which is the source of truth. */
-    item.totalItems = item.taps.length;
-    item.lastTap = item.taps[item.totalItems - 1];
-
-    /* TODO: This is a placeholder. I wrote a method to calculate 
-    level based on the 'taps' array. Just need to implement it here. */
-    item.level = 1;
-
-    return item;
-  }
 
   user.getProfile().then(function(profile) {
     var params = {
@@ -222,6 +223,66 @@ proto.get = function(config, user, db, req, res) {
           JSON.stringify(data.Items.map(prepareDynamoHabitItem)));
       }
     });
+  });
+};
+
+
+proto.update = function(config, user, db, habitID, attributeUpdates, req, res) {
+  // Get the user's profile because we need userID
+  return user.getProfile().then(function(profile) {
+
+    // Build a query to give to Dynamo
+    var params = {
+      TableName: config.AWS_HABITS_TABLE_V2,
+      Key: { 
+        'ownerID' : { N: toString(profile.userID) },
+        'habitID' : { S: toString(habitID) }
+      }
+    };
+    /**
+    * Expected format:
+      attribute_name: {
+          Action: 'ADD', 
+          Value: { S: 'STRING_VALUE' }
+      },
+      ...Other attributes...
+    */
+    params['AttributeUpdates'] = attributeUpdates;
+
+    return new Promise(function(resolve, reject) {
+      db.updateItem(params, function(err, data) {
+          if (err) reject(err); // an error occurred
+          else resolve(data); // successful response
+      });
+    });
+  });
+};
+
+proto.addTap = function(config, user, db, habitID, req, res) {
+  var currentTime = toString(new Date().getTime());
+
+  if (typeof habitID !== 'string') {
+    printResponse(res, false, 'Invalid habitID');
+  }
+
+  this.update(config, user, db, habitID,
+  {
+    taps: {
+      Action: 'ADD',
+      Value: {NS: [currentTime]}
+    },
+    totalTaps: {
+      Action: 'ADD',
+      Value: {N: toString(1)}
+    },
+    timeLastUpdated: {
+      Action: 'PUT',
+      Value: {N: currentTime}
+    }
+  }).then(function() {
+    printResponse(res, true, 'Tap recorded');
+  }).catch(function() {
+    printResponse(res, false, 'Tap could not be recorded');
   });
 };
 
@@ -291,25 +352,6 @@ proto.save = function(config, user, db, req, res) {
       true, 'Save passed', {habitID: habitID});
     var onFailure = printResponse.bind(undefined, res, false, 'Save failed');
 
-    db.putItem(newItem, onSuccess, onFailure);
-  });
-};
-
-proto.saveAll = function(config, user, db, req, res) {
-  var onSuccess = printResponse.bind(undefined, res, true, 'Saved record'),
-      onFailure = printResponse.bind(undefined, res, false, 'Save failed');
-
-  user.getProfile().then(function(profile) {
-    var userID = profile.userID; 
-
-    var newItem = {
-      TableName: config.AWS_HABITS_TABLE,
-      Item: {
-        userId: {'S' : toString(req.body.userID)}, 
-        title: {'S' : 'all-user-habits'},
-        content: {'S' : req.body.content}
-      }
-    };
     db.putItem(newItem, onSuccess, onFailure);
   });
 };
