@@ -9,10 +9,12 @@
 
   function sync(profileId) {
     new Promise(function(resolve, reject) {
-      $.get("/api/habits/" + profileId, function(response) {
+
+      $.get("/api/habit/", function(response) {
         try {
           response = JSON.parse(response);
-          resolve(JSON.parse(response.content));
+          let parsed = JSON.parse(response.content);
+          resolve(parsed);
         } catch (e) {
           reject('Error parsing JSON');
         }

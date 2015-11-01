@@ -154,6 +154,31 @@ function parseDynamoQueryItem(item) {
 }
 
 proto.get = function(config, user, db, req, res) {
+  /**
+  * @desc Parse and add some metadata to a habit item
+  * returned by Dynamo. 
+  */
+  function prepareDynamoHabitItem(item) {
+    // Removes some Dynamo metadata not needed by the client
+    item = parseDynamoQueryItem(item);
+
+    /* TODO: Remove the following 2 legacy properties.
+    They're no longer used but expected by some methods. */
+    item.id = item.habitID; 
+    item.deleted = false;
+
+    /* Get items length here to save on front-end computation.
+    This property may already exist, but we want to ensure it's in
+    sync with the array of taps, which is the source of truth. */
+    item.totalItems = item.taps.length;
+    item.lastTap = item.taps[item.totalItems - 1];
+
+    /* TODO: This is a placeholder. I wrote a method to calculate 
+    level based on the 'taps' array. Just need to implement it here. */
+    item.level = 1;
+
+    return item;
+  }
 
   user.getProfile().then(function(profile) {
     var params = {
@@ -174,7 +199,7 @@ proto.get = function(config, user, db, req, res) {
         printResponse(res, false, 'Query failed');
       } else {
         printResponse(res, true, 'Query succeeded',
-          JSON.stringify(data.Items.map(parseDynamoQueryItem)));
+          JSON.stringify(data.Items.map(prepareDynamoHabitItem)));
       }
     });
   });
@@ -212,6 +237,21 @@ proto.save = function(config, user, db, req, res) {
     var onSuccess = printResponse.bind(undefined, res, true, 'Saved record'),
     onFailure = printResponse.bind(undefined, res, false, 'Save failed');
 
+    /* Determine if the habit frequency should be 
+    described in minutes, hours or days, depending on
+    the number of milliseconds */
+    var freqType,
+        msInHour = 1000 * 60 * 60,
+        msInDay = 1000 * 60 * 60 * 24;
+
+    if (freq < msInHour) {
+      freqType = 'minutes';
+    } else if (freq < msInDay) {
+      freqType = 'hours';
+    } else {
+      freqType = 'days';
+    }
+
     var itemContent = getDynamoItem({
       habitID: generateHabitID(profile.userID),
       ownerID: parseInt(profile.userID),
@@ -219,7 +259,9 @@ proto.save = function(config, user, db, req, res) {
       timeLastUpdated: currentTime,
       timeCreated: currentTime,
       freq: freq,
-      taps: [currentTime]
+      freqType: freqType,
+      taps: [currentTime],
+      totalTaps: 1
     });
 
     var newItem = {

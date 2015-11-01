@@ -103,11 +103,11 @@
           <div className={progressClasses} style={progressStyle}></div>
 
           <div className="valign-wrapper habit-level col-3">
-            <div className="valign-inner"><span className="lvl-text">Lvl</span> {habit.attr('level')}</div>
+            <div className="valign-inner"><span className="lvl-text">Lvl</span> {habit.level}</div>
           </div>
 
           <div className={titleClasses}>
-            <div className="valign-inner">{habit.title}</div>
+            <div className="valign-inner">{habit.content}</div>
           </div>
 
           <div className={habitIconClasses}>
