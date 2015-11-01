@@ -113,6 +113,10 @@ app.post('/api/habits/', ensureAPIAuthenticated, function(req, res) {
   habit.saveAll(config, user, db, req, res);
 });
 
+app.delete('/api/habit/:habitID', ensureAPIAuthenticated, function(req, res) {
+  habit.remove(config, user, db, req, res);
+});
+
 app.post('/api/habit/', ensureAPIAuthenticated, function(req, res) {
   // Save a single habit record
   habit.save(config, user, db, req, res);

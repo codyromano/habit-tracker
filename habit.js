@@ -153,6 +153,28 @@ function parseDynamoQueryItem(item) {
   });
 }
 
+proto.remove = function(config, user, db, req, res) {
+
+  user.getProfile().then(function(profile) {
+    var params = {
+      TableName: config.AWS_HABITS_TABLE_V2,
+      Key: { 
+          ownerID: { N: toString(profile.userID) },
+          habitID: { S: toString(req.params.habitID)}
+      }
+    };
+    db.deleteItem(params, function(err, data) {
+        if (err) { 
+          console.log(err); 
+          printResponse(res, false, 'Removal failed');
+        } else {
+          console.log(data); // successful response
+          printResponse(res, true, 'Removal succeeded');
+        }
+    });
+  });
+};
+
 proto.get = function(config, user, db, req, res) {
   /**
   * @desc Parse and add some metadata to a habit item

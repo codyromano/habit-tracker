@@ -211,6 +211,14 @@
     query[uniqAttr] = uniqValue;
 
     updateHabits(query, function(habit) {
+
+      $.ajax({
+        url: '/api/habit/' + habit.habitID,
+        type: 'DELETE'
+      }).done(function(result) {
+        console.log(result);
+      });
+
       habit.deleted = true; 
       recordDeleted = true; 
       return habit;

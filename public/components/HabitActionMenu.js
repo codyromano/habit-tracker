@@ -3,7 +3,8 @@
 
   exports.HabitActionMenu = React.createClass({
     deleteButtonPushed: function() {
-      PubSub.publish('habitDeleted', 'title', this.props.habitTitle);
+      //PubSub.publish('habitDeleted', 'title', this.props.habitTitle);
+      PubSub.publish('habitDeleted', 'habitID', this.props.habitID);
     },
 
     completeButtonPushed: function() {

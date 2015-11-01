@@ -117,7 +117,8 @@
           </div>
         </div>
 
-        <HabitActionMenu id={habit.id} habitTitle={habit.title} hidden={_self.state.actionMenuHidden}/>
+        <HabitActionMenu habitID={habit.habitID} habitTitle={habit.title} 
+        hidden={_self.state.actionMenuHidden}/>
       </div>;
     }
   });
