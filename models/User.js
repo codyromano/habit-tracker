@@ -19,6 +19,13 @@ function User(appConfig, db, id, profile) {
     profilePhoto: null
   };
 
+  this.getAttribute = function(attrName) {
+    if (!attrName in attrs) {
+      console.warn('User attribute %s does not exist', attrName);
+    }
+    return attrs[attrName];
+  };
+
   this.attributesLoaded = function() {
     // TODO: Make this check more concise using all() and isString()
     return (typeof attrs.name === 'string' && 

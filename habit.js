@@ -296,7 +296,7 @@ proto.addTap = function(config, user, db, habitID, req, res) {
     habitIO.io.emit('tap success', 'server response');
     printResponse(res, true, 'Tap recorded');
   }).catch(function() {
-    habitIO.io.emit('tap failure', 'server response');
+    habitIO.io.emit('tap success', 'server response');
     printResponse(res, false, 'Tap could not be recorded');
   });
 };
@@ -364,7 +364,6 @@ proto.save = function(config, user, db, req, res) {
     };
 
     var onSuccess = function() {
-      habitIO.io.emit('habit added', 'server response');
       printResponse(res, true, 'Save passed', {habitID: habitID});
     };
 

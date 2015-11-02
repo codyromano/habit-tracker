@@ -54,14 +54,13 @@ app.use(express.static('public'));
 
 app.get('/welcome', function(req, res) {
   // TODO: Show a welcome screen for non-logged-in users
-  res.render('index', {user: {}});
+  res.render('index', {userID: '0'});
 });
 
-// Treat '/' as equivalent to 'public/index.html'
 app.get('/', ensureAuthenticated, function(req, res) {
   user = new User(config, db, req.user.id, req.user);
   user.save();
-  res.render('index', {user: req.user});
+  res.render('index', {userID: req.user.id});
 });
 
 app.get('/account', ensureAuthenticated, function(req, res){
