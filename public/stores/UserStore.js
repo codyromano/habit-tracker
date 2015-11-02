@@ -12,7 +12,7 @@
 
   function levelSum(habits) {
     return habits.reduce(function(result, habit) {
-      return result + habit.attr('level');
+      return result + habit.level;
     }, 0);
   }
 

@@ -19,7 +19,8 @@
     },
 
     componentDidMount: function() {
-      var id = this.props.habit.attr('id'),
+      var id = this.props.habit.habitID,
+          habit = this.props.habit,
           _self = this;
 
       /* toggledId is the id of the parent habit of the menu that 
@@ -30,12 +31,19 @@
         }
       });
 
+      /*
+      PubSub.subscribe('habitCompleted', function(uniqueProperty, uniqueValue) {
+        if (habit[uniqueProperty] === uniqueValue) {
+          habit.lastTap = new Date().getTime();
+        }
+      });
+      */
+
       setInterval(this.getTimeRemaining, 1000);
-      PubSub.subscribe('habitHasPendingDemotion:' + id, this.onHabitDemoted);
     },
 
     toggleActionMenu: function() {
-      var id = this.props.habit.attr('id');
+      var id = this.props.habit.habitID;
 
       /* Instruct other menus to hide themselves because 
       this menu is going to open */
@@ -47,14 +55,14 @@
       var now = new Date().getTime();
       var habit = this.props.habit;
 
-      var msPassed = now - habit.attr('lastTap'),
-      msLeft = msPassed / habit.attr('freq');
+      var msPassed = now - habit.lastTap,
+      msLeft = msPassed / habit.freq;
 
-      var timeLeftAsPercentage = (100 - ((msPassed / habit.attr('freq')) * 100)).toFixed(3);
+      var timeLeftAsPercentage = (100 - ((msPassed / habit.freq) * 100)).toFixed(3);
 
       if (timeLeftAsPercentage < 0) {
         // Demote the user by a level for each cycle that has passed. 
-        PubSub.publish('habitPastDue', habit.attr('id'), Math.floor(msPassed / habit.attr('freq')));
+        PubSub.publish('habitPastDue', habit.habitID, Math.floor(msPassed / habit.freq));
         timeLeftAsPercentage = 0;
       }
 

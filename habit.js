@@ -156,11 +156,10 @@ function parseDynamoQueryItem(item) {
 }
 
 proto.remove = function(config, user, db, req, res) {
-
   user.getProfile().then(function(profile) {
     var params = {
       TableName: config.AWS_HABITS_TABLE_V2,
-      Key: { 
+ 
           ownerID: { N: toString(profile.userID) },
           habitID: { S: toString(req.params.habitID)}
       }
@@ -199,7 +198,7 @@ function prepareDynamoHabitItem(item) {
 
   // Sort timestamps from most to least recent
   item.taps = item.taps.sort(function(timeA, timeB) {
-    return timeB - timeA; 
+    return timeA - timeB; 
   });
 
   item.lastTap = item.taps[item.totalItems - 1];
@@ -209,7 +208,6 @@ function prepareDynamoHabitItem(item) {
 }
 
 proto.get = function(config, user, db, req, res) {
-
   user.getProfile().then(function(profile) {
     var params = {
       TableName : config.AWS_HABITS_TABLE_V2,

@@ -32,8 +32,7 @@
     componentDidMount: function() {
       var _self = this; 
       PubSub.subscribe('habitListChanged', function(habits) {
-        var showHabits = habits.filter(isNotDeleted);
-        _self.setState({habits: showHabits});
+        _self.setState({habits: habits});
       });
       PubSub.subscribe('messageListChanged', function(messages) {
         _self.setState({queue: messages}); 
