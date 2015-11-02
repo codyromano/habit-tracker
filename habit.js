@@ -1,3 +1,5 @@
+var habitMath = require('./habitMath');
+
 function Habit() {}
 var proto = Habit.prototype; 
 
@@ -190,12 +192,19 @@ function prepareDynamoHabitItem(item) {
   This property may already exist, but we want to ensure it's in
   sync with the array of taps, which is the source of truth. */
   item.totalItems = item.taps.length;
+
+  // Convert numeric properties that are returned as strings
+  item.taps = item.taps.map(parseFloat);
+  item.freq = parseInt(item.freq);
+
+  // Sort timestamps from most to least recent
+  item.taps = item.taps.sort(function(timeA, timeB) {
+    return timeB - timeA; 
+  });
+
   item.lastTap = item.taps[item.totalItems - 1];
 
-  /* TODO: This is a placeholder. I wrote a method to calculate 
-  level based on the 'taps' array. Just need to implement it here. */
-  item.level = 1;
-
+  item.level = habitMath.getHabitLevel(item.taps, item.freq);
   return item;
 }
 
