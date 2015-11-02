@@ -1,10 +1,11 @@
 'use strict';
 
-var gulp                = require('gulp'),
-    plugins             = require('gulp-load-plugins')(),
-    uglify              = require('gulp-uglify'),
-    concat              = require('gulp-concat'),
-    app                 = require('./main');
+var gulp = require('gulp'),
+    plugins = require('gulp-load-plugins')(),
+    uglify = require('gulp-uglify'),
+    concat = require('gulp-concat'),
+    app = require('./main'),
+    habitIO = require('./habitIO');
 
 var env = (process.env.NODE_ENV=='dev') ? 'dev' : 'production';
 
@@ -42,13 +43,7 @@ var jsFiles = [
 
 app.set('port', process.env.PORT || 8081);
 
-gulp.task('start-server', function() {
-  var server = app.listen(app.get('port'), function() {
-    console.log('Express server listening on port %s', 
-      server.address().port);
-  });
-  return server; 
-});
+gulp.task('start-server', habitIO.startServer);
 
 gulp.task('minify-js', function() {
   if (env === 'production') {

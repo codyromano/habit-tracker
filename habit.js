@@ -156,10 +156,11 @@ function parseDynamoQueryItem(item) {
 }
 
 proto.remove = function(config, user, db, req, res) {
+
   user.getProfile().then(function(profile) {
     var params = {
       TableName: config.AWS_HABITS_TABLE_V2,
- 
+      Key: {  
           ownerID: { N: toString(profile.userID) },
           habitID: { S: toString(req.params.habitID)}
       }

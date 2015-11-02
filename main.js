@@ -48,7 +48,6 @@ AWS.config.update({
 });
 var db = new AWS.DynamoDB({region: config.AWS_REGION});
 
-
 // Configure express server
 var app = express();
 
@@ -88,7 +87,7 @@ app.get('/auth/facebook',
   passport.authenticate('facebook', { scope: fbPermsScope }));
 
 app.get('/auth/facebook/callback', 
-  passport.authenticate('facebook', { scope: fbPermsScope, failureRedirect: '/login' }),
+  passport.authenticate('facebook', { scope: fbPermsScope, failureRedirect: '/welcome' }),
   function(req, res) {
     res.redirect('/');
   });
