@@ -5,16 +5,12 @@ var util = require('util'),
     _ = require('underscore');
 
 // Web server and file system
-var express = require('express'),
-    fs = require('fs'),
-    path = require('path');
+var express = require('express');
 
 // Basic Configuration
-var rootDir = path.dirname(require.main.filename);
-var pathToConfig = './appConfig.json';
-var config = fs.readFileSync(pathToConfig, 'utf8');
-config = JSON.parse(config);
-config.env = (process.env.NODE_ENV=='dev') ? 'dev' : 'production';
+var config = require('./config');
+
+var db = require('./db');
 
 // Social login
 var passport = new require('./HabitsPassport')(config);
@@ -25,9 +21,6 @@ var bodyParser = require('body-parser'),
   session = require('express-session'),
   methodOverride = require('method-override'),
   cookieParser = require("cookie-parser");
-
-// Databases
-var AWS = require('aws-sdk');
 
 // Models
 var User = require('./models/User'),
@@ -40,22 +33,11 @@ var habit = new Habit();
 // Build system 
 var gulpfile = require('./gulpfile');
 
-// AWS and DynamoDB configuration
-AWS.config.update({
-  accessKeyId: config.AWS_ACCESS_KEY_ID,
-  secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-  region: config.AWS_REGION
-});
-var db = new AWS.DynamoDB({region: config.AWS_REGION});
-
 // Configure express server
-var app = express();
+var app = require('./app');
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-
-app.use(cookieParser());
-app.use(methodOverride());
 
 app.use(session({secret: config.PASSPORT_SECRET}));
 app.use(passport.initialize());
