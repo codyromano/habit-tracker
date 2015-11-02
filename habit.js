@@ -1,4 +1,5 @@
-var habitMath = require('./habitMath');
+var habitMath = require('./habitMath'),
+    habitIO = require('./habitIO');
 
 function Habit() {}
 var proto = Habit.prototype; 
@@ -259,8 +260,12 @@ proto.update = function(config, user, db, habitID, attributeUpdates, req, res) {
 
     return new Promise(function(resolve, reject) {
       db.updateItem(params, function(err, data) {
-          if (err) reject(err); // an error occurred
-          else resolve(data); // successful response
+          if (err) {
+            console.error(err);
+            reject(err); 
+          } else {
+            resolve(data); 
+          }
       });
     });
   });
@@ -288,8 +293,10 @@ proto.addTap = function(config, user, db, habitID, req, res) {
       Value: {N: currentTime}
     }
   }).then(function() {
+    habitIO.io.emit('tap success', 'server response');
     printResponse(res, true, 'Tap recorded');
   }).catch(function() {
+    habitIO.io.emit('tap failure', 'server response');
     printResponse(res, false, 'Tap could not be recorded');
   });
 };
@@ -356,8 +363,11 @@ proto.save = function(config, user, db, req, res) {
       Item: itemContent
     };
 
-    var onSuccess = printResponse.bind(undefined, res, 
-      true, 'Save passed', {habitID: habitID});
+    var onSuccess = function() {
+      habitIO.io.emit('habit added', 'server response');
+      printResponse(res, true, 'Save passed', {habitID: habitID});
+    };
+
     var onFailure = printResponse.bind(undefined, res, false, 'Save failed');
 
     db.putItem(newItem, onSuccess, onFailure);

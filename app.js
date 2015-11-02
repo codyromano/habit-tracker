@@ -14,4 +14,10 @@ app.use(methodOverride());
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+/*
+app.use(session({secret: config.PASSPORT_SECRET}));
+app.use(passport.initialize());
+app.use(passport.session());
+*/
+
 module.exports = app;

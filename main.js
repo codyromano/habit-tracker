@@ -39,6 +39,9 @@ var app = require('./app');
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
+app.use(cookieParser());
+app.use(methodOverride());
+
 app.use(session({secret: config.PASSPORT_SECRET}));
 app.use(passport.initialize());
 app.use(passport.session());

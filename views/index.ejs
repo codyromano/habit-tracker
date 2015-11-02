@@ -53,6 +53,9 @@ ga('send', 'pageview');
 <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io();
+  socket.on('tap success', function(resp) {
+    console.log('received tap success with %s', resp);
+  });
 </script>
 
 </body>
