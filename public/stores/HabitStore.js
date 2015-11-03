@@ -65,9 +65,21 @@
   }
 
   function incrementHabitTaps(uniqAttr, habitID) {
+    var habit = habits.filter(function(habit) {
+      return habit.habitID === habitID;
+    });
+
+    if (!habit[0]) {
+      throw new Error('No habit corresponds to habitID "%s"', habitID);
+    }
+
+    habit = habit[0];
     $.ajax({
       type: 'PUT',
-      url: '/api/habit/' + habitID + '/tap'
+      url: '/api/habit/' + habit.habitID + '/tap',
+      data: {
+        habit: habit
+      }
     });
   }
 
@@ -82,9 +94,7 @@
 
   var socket = io();
   socket.on('habit added', function(habit) {
-    console.log('received habit added event: %O', habit);
     habits.push(habit);
-
     PubSub.publish('habitListChanged', habits);
   });
 
@@ -93,6 +103,30 @@
       return habit.habitID !== habitID; 
     });
     PubSub.publish('habitListChanged', habits);
+  });
+
+  /**
+  * @param {Object} habit The ID of the changed habit and the 
+  * properties within it that have changed. 
+  */
+  socket.on('tap success', function(changedHabitProps) {
+    habits = habits.filter(function(habit) {
+      if (habit.habitID == changedHabitProps.habitID) {
+        habit.taps = changedHabitProps.taps;
+        habit.lastTap = changedHabitProps.lastTap;
+        habit.totalTaps = changedHabitProps.totalTaps;
+        habit.level = changedHabitProps.level;
+      }
+      return habit;
+    });
+
+    PubSub.publish('habitListChanged', habits);
+  });
+
+  socket.on('tap failure', function(err) {
+    PubSub.publish('messageAdded', 'Whoops...There was an error recording ' + 
+      'your progress. Please try again.', 4000);
+    console.error(err);
   });
 
   function addHabit(habit) {

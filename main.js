@@ -93,7 +93,7 @@ function ensureAuthenticated(req, res, next) {
 }
 
 app.put('/api/habit/:habitID/tap', ensureAPIAuthenticated, function(req, res) {
-  habit.addTap(config, user, db, req.params.habitID, req, res);
+  habit.addTap(config, user, db, req.body.habit, req, res);
 });
 
 app.delete('/api/habit/:habitID', ensureAPIAuthenticated, function(req, res) {

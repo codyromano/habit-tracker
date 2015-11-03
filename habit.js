@@ -197,7 +197,7 @@ function prepareDynamoHabitItem(item) {
 
   // Convert numeric properties that are returned as strings
   item.taps = item.taps.map(parseFloat);
-  item.freq = parseInt(item.freq);
+  item.freq = parseFloat(item.freq);
 
   // Sort timestamps from most to least recent
   item.taps = item.taps.sort(function(timeA, timeB) {
@@ -272,18 +272,32 @@ proto.update = function(config, user, db, habitID, attributeUpdates, req, res) {
   });
 };
 
-proto.addTap = function(config, user, db, habitID, req, res) {
-  var currentTime = toString(new Date().getTime());
+proto.addTap = function(config, user, db, habit, req, res) {
+  var currentTime = new Date().getTime(), habitID;
 
-  if (typeof habitID !== 'string') {
-    printResponse(res, false, 'Invalid habitID');
+  try {
+    if (typeof habit !== 'object') {
+      throw new Error('You must provide a habit object.');
+    }
+    if (typeof habit.habitID !== 'string') {
+      throw new Error('Habit must include a valid habitID string');
+    }
+    if (typeof habit.taps !== 'object' || !habit.taps instanceof Array) {
+      throw new Error('Habit must include a "taps" array');
+    }
+  } catch(e) {
+    habitIO.io.emit('tap failure', 'error: ' + e);
+    printResponse(res, false, 'Request validation error: ' + e);
+    return;
   }
+
+  habitID = habit.habitID;
 
   this.update(config, user, db, habitID,
   {
     taps: {
       Action: 'ADD',
-      Value: {NS: [currentTime]}
+      Value: {NS: [toString(currentTime)]}
     },
     totalTaps: {
       Action: 'ADD',
@@ -291,13 +305,39 @@ proto.addTap = function(config, user, db, habitID, req, res) {
     },
     timeLastUpdated: {
       Action: 'PUT',
-      Value: {N: currentTime}
+      Value: {N: toString(currentTime)}
     }
   }).then(function() {
-    habitIO.io.emit('tap success', 'server response');
+    
+    var newTapArray = habit.taps.map(function(timestamp) {
+      var parsed = parseFloat(timestamp);
+
+      /* I encountered an issue with NaN values being pushed to the taps
+      array. This appears to be fixed by replacing parseInt w/ parseFloat
+      in several locations, but I'm adding this check as a temporary precaution 
+      so that subtle deviations in the data don't go unnoticed. */
+      if (isNaN(parsed)) {
+        throw new Error('Non-number in habit.taps array: ' + timestamp);
+      }
+
+      return parsed;
+    }).concat(currentTime);
+
+    var freq = parseFloat(habit.freq);
+    var level = habitMath.getHabitLevel(newTapArray, freq);
+
+    habitIO.io.emit('tap success', {
+      habitID: habitID,
+      lastTap: currentTime,
+      taps: newTapArray,
+      totalTaps: newTapArray.length,
+      level: level
+    });
+
     printResponse(res, true, 'Tap recorded');
-  }).catch(function() {
-    habitIO.io.emit('tap success', 'server response');
+  }).catch(function(err) {
+    console.log(err);
+    habitIO.io.emit('tap failure', 'could not record tap');
     printResponse(res, false, 'Tap could not be recorded');
   });
 };
@@ -313,7 +353,7 @@ proto.save = function(config, user, db, req, res) {
       content = req.body.content;
 
   /**** Basic request validation ****/
-  if (isNaN(parseInt(freq))) {
+  if (isNaN(parseFloat(freq))) {
     printResponse(res, false, 'Frequency must be an integer.');
     return; 
   }
@@ -349,16 +389,16 @@ proto.save = function(config, user, db, req, res) {
 
     var rawItemContent = {
       habitID: habitID,
-      ownerID: parseInt(profile.userID),
+      ownerID: parseFloat(profile.userID),
       content: req.body.content,
       timeLastUpdated: currentTime,
       timeCreated: currentTime,
-      freq: parseInt(freq),
+      freq: parseFloat(freq),
       freqType: freqType,
-      taps: [parseInt(currentTime)],
+      taps: [parseFloat(currentTime)],
       totalTaps: 1,
       level: 1,
-      lastTap: parseInt(currentTime)
+      lastTap: parseFloat(currentTime)
     };
 
     var itemContent = getDynamoItem(rawItemContent);
