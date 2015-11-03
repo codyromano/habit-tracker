@@ -32,6 +32,7 @@
   $.get("/api/habit/", function(response) {
     response = JSON.parse(response);
     let parsed = JSON.parse(response.content);
+    habits = parsed; 
     PubSub.publish('habitListChanged', parsed);
   });
 
@@ -79,6 +80,21 @@
     });
   }
 
+  var socket = io();
+  socket.on('habit added', function(habit) {
+    console.log('received habit added event: %O', habit);
+    habits.push(habit);
+
+    PubSub.publish('habitListChanged', habits);
+  });
+
+  socket.on('habit deleted', function(habitID) {
+    habits = habits.filter(function(habit) {
+      return habit.habitID !== habitID; 
+    });
+    PubSub.publish('habitListChanged', habits);
+  });
+
   function addHabit(habit) {
     var time = U.convertMs(habit.freq, habit.freqType);
 
@@ -90,7 +106,7 @@
 
       if (result.success === true) {
         habit.habitID = result.content.habitID; 
-        habits.push(habit);
+        //habits.push(habit);
 
         PubSub.publish('messageAdded', 'You have ' + time + ' ' + habit.freqType +
         ' to ' + habit.content + '! Tap the progress bar when you\'re done.', 8000);

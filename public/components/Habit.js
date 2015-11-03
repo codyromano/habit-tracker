@@ -6,7 +6,10 @@
   var Habit = exports.Habit = React.createClass({
     getInitialState: function() {
       return {
-        timeLeftAsPercentage: 0,
+        /* Setting the initial progress to 1 gives us the cool
+        bar-expanding animation without appearing initially demoted
+        as it would if we were to use 0 as the starting integer. */
+        timeLeftAsPercentage: 1,
         actionMenuHidden: true,
         warned: false,
         demoteWarned: false

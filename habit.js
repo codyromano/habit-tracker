@@ -170,6 +170,7 @@ proto.remove = function(config, user, db, req, res) {
         if (err) { 
           printResponse(res, false, 'Removal failed');
         } else {
+          habitIO.io.emit('habit deleted', req.params.habitID);
           printResponse(res, true, 'Removal succeeded');
         }
     });
@@ -346,17 +347,21 @@ proto.save = function(config, user, db, req, res) {
 
     var habitID = generateHabitID(profile.userID);
 
-    var itemContent = getDynamoItem({
+    var rawItemContent = {
       habitID: habitID,
       ownerID: parseInt(profile.userID),
       content: req.body.content,
       timeLastUpdated: currentTime,
       timeCreated: currentTime,
-      freq: freq,
+      freq: parseInt(freq),
       freqType: freqType,
-      taps: [currentTime],
-      totalTaps: 1
-    });
+      taps: [parseInt(currentTime)],
+      totalTaps: 1,
+      level: 1,
+      lastTap: parseInt(currentTime)
+    };
+
+    var itemContent = getDynamoItem(rawItemContent);
 
     var newItem = {
       TableName: config.AWS_HABITS_TABLE_V2,
@@ -364,6 +369,7 @@ proto.save = function(config, user, db, req, res) {
     };
 
     var onSuccess = function() {
+      habitIO.io.emit('habit added', parseDynamoQueryItem(rawItemContent));
       printResponse(res, true, 'Save passed', {habitID: habitID});
     };
 

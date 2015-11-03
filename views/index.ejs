@@ -38,6 +38,7 @@ ga('send', 'pageview');
     <div id="reactRoot" style="position:relative;" class="noselect"><img src="images/loading.gif" class="loading"/></div>
   </main>
 
+<script src="/socket.io/socket.io.js"></script>
 <script src="all-non-jsx.js"></script>
 <script src="all-jsx.js"></script>
 
@@ -50,7 +51,6 @@ ga('send', 'pageview');
 })(U);
 </script>
 
-<script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io();
   socket.on('tap success', function(resp) {
