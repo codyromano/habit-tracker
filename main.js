@@ -23,8 +23,7 @@ var bodyParser = require('body-parser'),
   cookieParser = require("cookie-parser");
 
 // Models
-var User = require('./models/User'),
-    user;
+var activeUserStore = require('./activeUserStore');
 
 // App routes 
 var Habit = require('./habit');
@@ -32,7 +31,6 @@ var habit = new Habit();
 
 var habitIO = require('./habitIO'),
     userIONamespace;
-
 
 console.log('namespace: %s', habitIO.getNamespaceHash('testing'));
 
@@ -66,7 +64,8 @@ app.get('/welcome', function(req, res) {
 });
 
 app.get('/', ensureAuthenticated, function(req, res) {
-  user = new User(config, db, req.user.id, req.user);
+
+  var user = activeUserStore.add(req.user.id, req.user);
   user.ioChannel = habitIO.getNamespace(req.user.id); 
 
   user.save();
@@ -101,33 +100,41 @@ function ensureAPIAuthenticated(req, res, next) {
 }
 
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
+  if (req.isAuthenticated()) { 
+    return next(); 
+  }
   res.redirect('/welcome')
 }
 
 app.put('/api/habit/:habitID/tap', ensureAPIAuthenticated, function(req, res) {
+  var user = activeUserStore.add(req.user.id, req.user);
   habit.addTap(config, user, db, req.body.habit, req, res);
 });
 
 app.delete('/api/habit/:habitID', ensureAPIAuthenticated, function(req, res) {
+  var user = activeUserStore.add(req.user.id, req.user);
   habit.remove(config, user, db, req, res);
 });
 
 app.post('/api/habit/', ensureAPIAuthenticated, function(req, res) {
+  var user = activeUserStore.add(req.user.id, req.user);
   // Save a single habit record
   habit.save(config, user, db, req, res);
 });
 
 app.get('/api/habit/', ensureAPIAuthenticated, function(req, res) {
+  var user = activeUserStore.add(req.user.id, req.user);
   habit.get(config, user, db, req, res); 
 });
 
 /* The following route is deprecated in favor of /api/habit/ */
 app.get('/api/habits/:id', ensureAPIAuthenticated, function(req, res) {
+  var user = activeUserStore.add(req.user.id, req.user);
   habit.getAll(config, user, db, req, res); 
 });
 
 app.get('/api/user/', ensureAPIAuthenticated, function(req, res) {
+  var user = activeUserStore.add(req.user.id, req.user);
   user.getProfile().then(function(user) {
     res.send(JSON.stringify(user));
   });
