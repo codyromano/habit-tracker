@@ -1,13 +1,4 @@
-@font-face{
-  font-family:'MuseoSans';
-  src:url("http://s3.amazonaws.com/atlasobscura-fonts/museosans-300-webfont.eot");
-  src:url("http://s3.amazonaws.com/atlasobscura-fonts/museosans-300-webfont.eot?#iefix") format("embedded-opentype"),
-  url("http://s3.amazonaws.com/atlasobscura-fonts/museosans-300-webfont.woff") format("woff"),
-  url("http://s3.amazonaws.com/atlasobscura-fonts/museosans-300-webfont.ttf") format("truetype"),
-  url("http://s3.amazonaws.com/atlasobscura-fonts/museosans-300-webfont.svg#MuseoSans300Regular") format("svg");
-  font-weight:300;
-  font-style:normal;
-}
+@import url(https://fonts.googleapis.com/css?family=Poiret+One|Open+Sans);
 
 /* TODO: This declaration should be optimized; it is too broad.*/
 * {
@@ -29,7 +20,7 @@ a {
 }
 
 body, html {
-  font-family: MuseoSans;
+  font-family: Open Sans;
   background-color: #e9eaed;
 }
 

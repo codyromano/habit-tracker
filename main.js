@@ -59,7 +59,10 @@ app.use(express.static('public'));
 
 app.get('/welcome', function(req, res) {
   // TODO: Show a welcome screen for non-logged-in users
-  res.render('index', {user: {}});
+  res.render('index', {
+    user: {},
+    baseURL: config.BASE_URL_PRODUCTION
+  });
 });
 
 app.get('/', ensureAuthenticated, function(req, res) {
@@ -67,7 +70,10 @@ app.get('/', ensureAuthenticated, function(req, res) {
   user.ioChannel = habitIO.getNamespace(req.user.id); 
 
   user.save();
-  res.render('index', {user: req.user});
+  res.render('index', {
+    user: req.user, 
+    baseURL: config.BASE_URL_PRODUCTION
+  });
 });
 
 app.get('/account', ensureAuthenticated, function(req, res){
