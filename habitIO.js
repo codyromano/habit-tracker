@@ -2,6 +2,8 @@ var app = require('./app'),
     http = require('http').Server(app),
     io = require('socket.io')(http);
 
+var namespaces = {};
+
 var serverStarted = false;
 
 function startServer() {
@@ -15,7 +17,15 @@ function startServer() {
   return true;
 }
 
+function getNamespace(id) {
+  if (!namespaces[id]) {
+    namespaces[id] = io.of('/' + id);
+  }
+  return namespaces[id];
+}
+
 module.exports = {
   io: io,
+  getNamespace: getNamespace,
   startServer: startServer
 };

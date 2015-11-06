@@ -30,6 +30,9 @@ var User = require('./models/User'),
 var Habit = require('./habit');
 var habit = new Habit();
 
+var habitIO = require('./habitIO'),
+    userIONamespace;
+
 // Build system 
 var gulpfile = require('./gulpfile');
 
@@ -54,13 +57,15 @@ app.use(express.static('public'));
 
 app.get('/welcome', function(req, res) {
   // TODO: Show a welcome screen for non-logged-in users
-  res.render('index', {userID: '0'});
+  res.render('index', {user: {}});
 });
 
 app.get('/', ensureAuthenticated, function(req, res) {
   user = new User(config, db, req.user.id, req.user);
+  user.ioChannel = habitIO.getNamespace(req.user.id); 
+
   user.save();
-  res.render('index', {userID: req.user.id});
+  res.render('index', {user: req.user});
 });
 
 app.get('/account', ensureAuthenticated, function(req, res){

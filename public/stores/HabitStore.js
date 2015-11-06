@@ -8,27 +8,6 @@
     profile = newProfile;
   });
 
-  function sync() {
-    /*
-    return new Promise(function(resolve, reject) {
-      $.get("/api/habit/", function(response) {
-        try {
-          response = JSON.parse(response);
-          let parsed = JSON.parse(response.content);
-          resolve(parsed);
-        } catch (e) {
-          reject('Error parsing JSON');
-        }
-      }).error(function(message) {
-        reject(message);
-      });
-
-    }).then(function(habitsFromServer) {
-      PubSub.publish('habitListChanged', habitsFromServer);
-    });
-    */
-  }
-
   $.get("/api/habit/", function(response) {
     response = JSON.parse(response);
     let parsed = JSON.parse(response.content);
@@ -140,7 +119,6 @@
 
       if (result.success === true) {
         habit.habitID = result.content.habitID; 
-        //habits.push(habit);
 
         PubSub.publish('messageAdded', 'You have ' + time + ' ' + habit.freqType +
         ' to ' + habit.content + '! Tap the progress bar when you\'re done.', 8000);

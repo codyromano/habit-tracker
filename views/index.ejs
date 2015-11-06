@@ -52,7 +52,7 @@ ga('send', 'pageview');
 </script>
 
 <script>
-  var socket = io();
+  var socket = io('http://localhost:8081/<%=user.id%>');
   socket.on('tap success', function(resp) {
     console.log('received tap success with %s', resp);
   });
