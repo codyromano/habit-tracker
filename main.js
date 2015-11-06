@@ -33,11 +33,10 @@ var habit = new Habit();
 var habitIO = require('./habitIO'),
     userIONamespace;
 
-// Build system 
-var gulpfile = require('./gulpfile');
-
 // Configure express server
 var app = require('./app');
+
+app.set('port', 8081);
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');

@@ -3,14 +3,14 @@ var app = require('./app'),
     io = require('socket.io')(http);
 
 var namespaces = {};
-
+var port = 8081;
 var serverStarted = false;
 
 function startServer() {
   if (serverStarted) { return false; }
 
-  http.listen(app.get('port'), function() {
-    console.log('Socket.io HTTP server listening on %s', app.get('port'));
+  http.listen(port, function() {
+    console.log('Socket.io HTTP server listening on %s', port);
   });
 
   serverStarted = true;

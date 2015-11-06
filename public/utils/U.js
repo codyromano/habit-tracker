@@ -50,11 +50,11 @@
   U.getDomain = function() {
     var domain = document.domain,
         domainErrorMsg = 'Unknown / unauthorized domain'; 
-
-    if (domain === 'habits.elasticbeanstalk.com') {
+console.log(domain);
+    if (domain == '159.203.245.224') {
       return 'prod';
     }
-    if (domain === 'localhost') {
+    if (domain == 'localhost') {
       return 'devo';
     }
     if (domain === '127.0.0.1') {
