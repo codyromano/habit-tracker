@@ -3,6 +3,11 @@
 
   var U = exports.U = {}; // Utilities
 
+  U.getCurrentURL = function() {
+    return location.protocol + '//' + location.hostname + 
+      (location.port ? ':'+location.port: '');
+  };
+
   U.addClass = function(el, className) {
     el.classList.add(className);
     return el;

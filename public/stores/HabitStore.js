@@ -1,8 +1,8 @@
-(function(exports, PubSub, UserStore, $, config) {
+(function(exports, PubSub, UserStore, $, config, U) {
   'use strict';
 
   var remoteSyncTimeout;
-  var profile = UserStore.getProfile(); 
+  var profile = UserStore.getProfile();
 
   PubSub.subscribe('userProfileChanged', function(newProfile) {
     profile = newProfile;
@@ -17,6 +17,56 @@
 
   var HabitStore = exports.HabitStore = {}; 
   var habits = [];
+
+  var HabitSocketEvents = {
+    socket: null,
+    currentURL: U.getCurrentURL(),
+
+    onHabitAdded: function(habit) {
+      // TODO: This needs to go after habits
+      habits.push(habit);
+      PubSub.publish('habitListChanged', habits);
+    },
+
+    onHabitDeleted: function(habitID) {
+      habits = habits.filter(function(habit) {
+        return habit.habitID !== habitID; 
+      });
+      PubSub.publish('habitListChanged', habits);
+    },
+
+    /**
+    * @param {Object} habit The ID of the changed habit and the 
+    * properties within it that have changed. 
+    */
+    onTapSuccess: function(changedHabitProps) {
+      habits = habits.filter(function(habit) {
+        if (habit.habitID == changedHabitProps.habitID) {
+          habit.taps = changedHabitProps.taps;
+          habit.lastTap = changedHabitProps.lastTap;
+          habit.totalTaps = changedHabitProps.totalTaps;
+          habit.level = changedHabitProps.level;
+        }
+        return habit;
+      });
+      PubSub.publish('habitListChanged', habits);
+    },
+
+    onTapFailure: function(err) {
+      PubSub.publish('messageAdded', 'Whoops...There was an error recording ' + 
+      'your progress. Please try again.', 4000);
+    },
+
+    init: function(userNamespaceID) {
+      if (this.socket) { return false; }
+
+      this.socket = io(this.currentURL + '/' + userNamespaceID); 
+      this.socket.on('habit added', this.onHabitAdded.bind(this));
+      this.socket.on('habit deleted', this.onHabitDeleted.bind(this));
+      this.socket.on('tap success', this.onTapSuccess.bind(this));
+      this.socket.on('tap failure', this.onTapFailure.bind(this));
+    }
+  };
 
   function getHabits() {
     var result = habits;
@@ -67,46 +117,8 @@
       url: '/api/habit/' + habitID,
       type: 'DELETE'
     }).done(function(result) {
-      sync();
     });
   }
-
-  var socket = io();
-  socket.on('habit added', function(habit) {
-    habits.push(habit);
-    PubSub.publish('habitListChanged', habits);
-  });
-
-  socket.on('habit deleted', function(habitID) {
-    habits = habits.filter(function(habit) {
-      return habit.habitID !== habitID; 
-    });
-    PubSub.publish('habitListChanged', habits);
-  });
-
-  /**
-  * @param {Object} habit The ID of the changed habit and the 
-  * properties within it that have changed. 
-  */
-  socket.on('tap success', function(changedHabitProps) {
-    habits = habits.filter(function(habit) {
-      if (habit.habitID == changedHabitProps.habitID) {
-        habit.taps = changedHabitProps.taps;
-        habit.lastTap = changedHabitProps.lastTap;
-        habit.totalTaps = changedHabitProps.totalTaps;
-        habit.level = changedHabitProps.level;
-      }
-      return habit;
-    });
-
-    PubSub.publish('habitListChanged', habits);
-  });
-
-  socket.on('tap failure', function(err) {
-    PubSub.publish('messageAdded', 'Whoops...There was an error recording ' + 
-      'your progress. Please try again.', 4000);
-    console.error(err);
-  });
 
   function addHabit(habit) {
     var time = U.convertMs(habit.freq, habit.freqType);
@@ -126,8 +138,6 @@
         PubSub.publish('messageAdded', 'Sorry, I couldn\'t add your habit. '
           + 'Please try again.', 4000);
       }
-
-      sync();
     });
   }
 
@@ -135,7 +145,7 @@
   PubSub.subscribe('habitDeleted', deleteHabit);
   PubSub.subscribe('habitCompleted', incrementHabitTaps);
   PubSub.subscribe('userAuthenticated', function(profile) {
-    sync(profile.id);
+    HabitSocketEvents.init(profile.ioNamespaceID);
   });
 
   HabitStore.getHabits = getHabits; 
@@ -146,4 +156,4 @@
     });
   };
 
-})(window, PubSub, UserStore, jQuery, config); 
+})(window, PubSub, UserStore, jQuery, config, U); 

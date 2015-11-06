@@ -1,3 +1,5 @@
+var habitIO = require('../habitIO');
+
 function mapObj(obj, fn) {
   for (var key in obj) {
     obj[key] = fn(key, obj[key]);
@@ -16,7 +18,8 @@ function User(appConfig, db, id, profile) {
     userID: id,
     name: null,
     email: null,
-    profilePhoto: null
+    profilePhoto: null,
+    ioNamespaceID: habitIO.getNamespaceHash(id)
   };
 
   this.getAttribute = function(attrName) {

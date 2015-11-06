@@ -59,6 +59,7 @@
     if (response.userID) {
       PubSub.publish('userAuthenticated', {
         id: response.userID,
+        ioNamespaceID: response.ioNamespaceID,
         name: response.name,
         profilePicture: response.profilePhoto
       });

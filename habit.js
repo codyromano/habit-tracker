@@ -158,6 +158,9 @@ function parseDynamoQueryItem(item) {
 
 proto.remove = function(config, user, db, req, res) {
 
+  var userID = user.getAttribute('userID');
+  var userIONamespace = habitIO.getNamespace(userID);
+
   user.getProfile().then(function(profile) {
     var params = {
       TableName: config.AWS_HABITS_TABLE_V2,
@@ -170,7 +173,7 @@ proto.remove = function(config, user, db, req, res) {
         if (err) { 
           printResponse(res, false, 'Removal failed');
         } else {
-          habitIO.io.emit('habit deleted', req.params.habitID);
+          userIONamespace.emit('habit deleted', req.params.habitID);
           printResponse(res, true, 'Removal succeeded');
         }
     });
@@ -273,6 +276,9 @@ proto.update = function(config, user, db, habitID, attributeUpdates, req, res) {
 };
 
 proto.addTap = function(config, user, db, habit, req, res) {
+  var userID = user.getAttribute('userID');
+  var userIONamespace = habitIO.getNamespace(userID);
+
   var currentTime = new Date().getTime(), habitID;
 
   try {
@@ -286,7 +292,7 @@ proto.addTap = function(config, user, db, habit, req, res) {
       throw new Error('Habit must include a "taps" array');
     }
   } catch(e) {
-    habitIO.io.emit('tap failure', 'error: ' + e);
+    userIONamespace.emit('tap failure', 'error: ' + e);
     printResponse(res, false, 'Request validation error: ' + e);
     return;
   }
@@ -326,7 +332,7 @@ proto.addTap = function(config, user, db, habit, req, res) {
     var freq = parseFloat(habit.freq);
     var level = habitMath.getHabitLevel(newTapArray, freq);
 
-    habitIO.io.emit('tap success', {
+    userIONamespace.emit('tap success', {
       habitID: habitID,
       lastTap: currentTime,
       taps: newTapArray,
@@ -337,7 +343,7 @@ proto.addTap = function(config, user, db, habit, req, res) {
     printResponse(res, true, 'Tap recorded');
   }).catch(function(err) {
     console.log(err);
-    habitIO.io.emit('tap failure', 'could not record tap');
+    userIONamespace.emit('tap failure', 'could not record tap');
     printResponse(res, false, 'Tap could not be recorded');
   });
 };
@@ -347,6 +353,8 @@ proto.addTap = function(config, user, db, habit, req, res) {
 */
 proto.save = function(config, user, db, req, res) {
   var currentTime = new Date().getTime();
+  var userID = user.getAttribute('userID');
+  var userIONamespace = habitIO.getNamespace(userID);
 
   /* How often (in milliseconds) the user must complete a habit */
   var freq = req.body.freq,
@@ -409,7 +417,7 @@ proto.save = function(config, user, db, req, res) {
     };
 
     var onSuccess = function() {
-      habitIO.io.emit('habit added', parseDynamoQueryItem(rawItemContent));
+      userIONamespace.emit('habit added', parseDynamoQueryItem(rawItemContent));
       printResponse(res, true, 'Save passed', {habitID: habitID});
     };
 

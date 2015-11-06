@@ -33,6 +33,9 @@ var habit = new Habit();
 var habitIO = require('./habitIO'),
     userIONamespace;
 
+
+console.log('namespace: %s', habitIO.getNamespaceHash('testing'));
+
 // Configure express server
 var app = require('./app');
 
