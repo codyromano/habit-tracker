@@ -1,6 +1,9 @@
 (function(exports, PubSub, Habit, NewHabitForm, Messages, U) {
   'use strict';
 
+  console.log('%cThanks for using Habit Tracker (working title).', 'font-size:18px;color:green;');
+  console.log('%cView source and contribute at %s', 'font-size: 15px;color:blue;', 'https://github.com/codyromano/habit-tracker');
+
   function sortHabits(a, b) {
      var now = new Date().getTime(),
      ageA = (now - a.lastTap) / a.freq,

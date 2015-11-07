@@ -209,7 +209,7 @@ function prepareDynamoHabitItem(item) {
 
   item.lastTap = item.taps[item.totalItems - 1];
 
-  item.level = habitMath.getHabitLevel(item.taps, item.freq);
+  item.level = habitMath.getHabitLevel(item.taps, item.freq).level;
   return item;
 }
 
@@ -330,9 +330,11 @@ proto.addTap = function(config, user, db, habit, req, res) {
     }).concat(currentTime);
 
     var freq = parseFloat(habit.freq);
-    var level = habitMath.getHabitLevel(newTapArray, freq);
+    var levelInfo = habitMath.getHabitLevel(newTapArray, freq);
+    var level = levelInfo.level;
 
     userIONamespace.emit('tap success', {
+      progress: levelInfo.progress,
       habitID: habitID,
       lastTap: currentTime,
       taps: newTapArray,

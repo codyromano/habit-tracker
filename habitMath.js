@@ -12,7 +12,10 @@ var levelCapExp = 1.5;
 * @returns {Number} Taps required to reach a level
 */
 function getLevelCap(level) {
-  return Math.floor(Math.pow(level + 1, levelCapExp)); 
+  var cap = Math.floor(Math.pow(level + 1, levelCapExp)); 
+
+  // Subtract a fixed integer (2) so that leveling up is easier at first
+  return Math.max(1, cap - 2);
 }
 
 /**
@@ -24,8 +27,20 @@ function getLevelCap(level) {
 * calculations. Call 'getHabitLevel' to get the real user-facing level.
 */
 function getBaseLevelByTaps(tapsTotal) {
-  var result = Math.floor(Math.log(tapsTotal) / Math.log(levelCapExp));
-  return Math.max(1, result);
+  var levelCap = 1, 
+      level = 0;
+
+  while (tapsTotal > levelCap) {
+    levelCap = getLevelCap(++level);
+  }
+  return Math.max(1, level);
+}
+
+function tapsBetweenLevels(levelA, levelB) {
+  var levelBCap = getLevelCap(levelB),
+      levelACap = getLevelCap(levelA);
+
+  return Math.max(1, levelBCap - levelACap);
 }
 
 /**
@@ -40,7 +55,10 @@ function getHabitLevel(tsArray, freq) {
       consecutiveTaps = 0,
       totalTaps = tsArray.length,
       levelsLostRecently = 0,
-      tsArrayWithoutLast;
+      tapsSinceLastLevelUp = 0,
+      progressTowardNextLevel = 0,
+      tsArrayWithoutLast,
+      tapsUntilNextLevel;
 
   if (typeof freq !== 'number' || freq < 1) {
     throw new Error('Frequency must be an integer greater than zero.');
@@ -51,11 +69,23 @@ function getHabitLevel(tsArray, freq) {
     tsArrayWithoutLast = tsArray.slice(0, totalTaps - 1); 
 
     tsArrayWithoutLast.forEach(function(timeA, index) {
+      var levelUp;
       var timeB = tsArray[index + 1], 
           levelsLost; 
 
       if (timeB - timeA <= freq) {
         ++consecutiveTaps; 
+
+        levelUp = getBaseLevelByTaps(consecutiveTaps) > 
+        getBaseLevelByTaps(consecutiveTaps - 1);
+
+        // Reset the count on level up
+        if (levelUp) {
+          tapsSinceLastLevelUp = 0;
+        } else {
+          ++tapsSinceLastLevelUp;
+        }
+
       } else {
         levelsLost = Math.floor((timeB - timeA) / freq); 
 
@@ -63,6 +93,7 @@ function getHabitLevel(tsArray, freq) {
         count to the minimum number of taps required for a certain level. 
         A level can't be less than 1. */
         consecutiveTaps = getLevelCap(Math.max(1, level - levelsLost));
+        tapsSinceLastLevelUp = 0;
       }
       level = getBaseLevelByTaps(consecutiveTaps);
     });
@@ -73,9 +104,24 @@ function getHabitLevel(tsArray, freq) {
   levelsLostRecently = Math.floor(
     (currentTime - tsArray[totalTaps - 1]) / freq
   );
+  if (levelsLostRecently >= 1) {
+    tapsSinceLastLevelUp = 0; 
+  }
   level = Math.max(1, level - levelsLostRecently); 
 
-  return level;
+  if (level === 1) {
+    tapsUntilNextLevel = 2;
+  } else {
+    tapsUntilNextLevel = tapsBetweenLevels(level - 1, level);
+  }
+
+  progressTowardNextLevel = tapsSinceLastLevelUp / tapsUntilNextLevel;
+  progressTowardNextLevel = Math.floor(progressTowardNextLevel * 100);
+
+  return {
+    level: level,
+    progress: progressTowardNextLevel
+  };
 }
 
 module.exports = {

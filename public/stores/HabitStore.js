@@ -8,12 +8,16 @@
     profile = newProfile;
   });
 
-  $.get("/api/habit/", function(response) {
-    response = JSON.parse(response);
-    let parsed = JSON.parse(response.content);
-    habits = parsed; 
-    PubSub.publish('habitListChanged', parsed);
-  });
+  /* This regular HTTP GET fires only once after the initial 
+  user authentication. We rely on web sockets to manage subsequent updates. */
+  function loadHabitsFromServer() {
+    $.get("/api/habit/", function(response) {
+      response = JSON.parse(response);
+      let parsed = JSON.parse(response.content);
+      habits = parsed; 
+      PubSub.publish('habitListChanged', parsed);
+    });
+  }
 
   var HabitStore = exports.HabitStore = {}; 
   var habits = [];
@@ -41,11 +45,25 @@
     */
     onTapSuccess: function(changedHabitProps) {
       habits = habits.filter(function(habit) {
+        var progress = changedHabitProps.progress;
+
         if (habit.habitID == changedHabitProps.habitID) {
           habit.taps = changedHabitProps.taps;
           habit.lastTap = changedHabitProps.lastTap;
           habit.totalTaps = changedHabitProps.totalTaps;
           habit.level = changedHabitProps.level;
+
+          /* Progress of zero on tap actually indicates a level up. This
+          may be counterintuitive if you're expecting 100. Please see
+          the habitMath module if you want a deep dive into 
+          why it works this way. */
+          if (progress === 0) {
+            PubSub.publish('messageAdded', 'You reached level ' + habit.level +
+              ' in "' + habit.content + '"!', 4000);
+          } else if (progress > 0) {
+            PubSub.publish('messageAdded', 'Level progress: ' + 
+              changedHabitProps.progress + '%', 4000);
+          } 
         }
         return habit;
       });
@@ -146,6 +164,7 @@
   PubSub.subscribe('habitCompleted', incrementHabitTaps);
   PubSub.subscribe('userAuthenticated', function(profile) {
     HabitSocketEvents.init(profile.ioNamespaceID);
+    loadHabitsFromServer();
   });
 
   HabitStore.getHabits = getHabits; 

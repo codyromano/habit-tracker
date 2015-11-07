@@ -13,7 +13,6 @@ function add(userID, passportProfile) {
   if (typeof userID !== 'string' || !userID.length) {
     throw new Error('userID must be a non-empty string; received %s', userID);
   }
-
   // Create the instance if it doesn't exist
   if (activeUsers[userID]) {
     userInstance = activeUsers[userID];
@@ -21,8 +20,6 @@ function add(userID, passportProfile) {
     userInstance = activeUsers[userID] = new User(config, db, 
       userID, passportProfile);
   }
-
-  console.log('active users: %s', Object.keys(activeUsers).length);
   return userInstance;
 }
 

@@ -55,7 +55,7 @@
   U.getDomain = function() {
     var domain = document.domain,
         domainErrorMsg = 'Unknown / unauthorized domain'; 
-console.log(domain);
+
     if (domain == '159.203.245.224') {
       return 'prod';
     }
