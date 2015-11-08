@@ -72,6 +72,7 @@
       this.setState({
         title: ''
       });
+      this.refs.form.getDOMNode().reset();
     },
 
     checkLifeScoreReq: function() {
@@ -94,9 +95,8 @@
         let extraNotice = extraRequired + ' more ' + 
           ((extraRequired > 1) ? 'points' : 'point');
 
-        PubSub.publish('messageAdded', 'You need a Life Score of ' + scoreRequired +
-         ' (' + extraNotice + ') to add another habit. Mark habits as done to boost' +
-         ' your Life Score.', 8000);
+        PubSub.publish('messageAdded', 'You need a Life Score of ' + scoreRequired + ' (' + extraNotice + ') to add ' + 
+          'another habit.', 5000);
         return false;
       }
       return true; 
@@ -165,8 +165,9 @@
 	    var showFreqTypes = {days: 'days', hours: 'hrs', minutes: 'mins'};
       var freqTypes = ['days','hours','minutes'].map(function(type) {
         var checked = (type === _self.state.freqType);
-        return <span key={type} className="freq-type"><input type="radio" ref="freqType" defaultChecked={checked}
-        value={type} name="freqType"/>{showFreqTypes[type]}</span>;
+        return <span key={type} className="freq-type">
+          <input type="radio" ref="freqType" defaultChecked={checked} defaultValue={type} name="freqType"/>
+          {showFreqTypes[type]}</span>;
       });
 
       // TODO: Create a separate component for the inner content of the form
@@ -180,12 +181,12 @@
             <div className="main-content">
             <fieldset>
               <label htmlFor="title">I want to</label>
-              <input type="text" ref="title" value={this.state.title} name="title" autoComplete="off" maxLength="30" 
+              <input type="text" ref="title" name="title" autoComplete="off" maxLength="30" 
               placeholder="exercise"/>
             </fieldset>
             <fieldset>
               <label htmlFor="freq">every</label>
-              <input type="number" ref="freq" name="freq" defaultValue={this.state.freq} placeholder="2" className="small"/>
+              <input type="number" ref="freq" name="freq" placeholder="2" className="small"/>
               {freqTypes}
             </fieldset>
             <fieldset>

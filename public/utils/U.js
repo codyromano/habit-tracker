@@ -3,6 +3,60 @@
 
   var U = exports.U = {}; // Utilities
 
+  /**
+  * @desc Create a 1-dimensional hash table from an array
+  * @param {Function} keyFn Used to derive a string key for each item.
+  * @returns {Object}
+  */
+  U.toHashTable = function(array, keyFn) {
+    return array.reduce(function(table, item) {
+      var key = keyFn(item); 
+      if (typeof key !== 'string') {
+        throw new Error('Your key finding function must' + 
+        ' return a string');
+      }
+      table[key] = table[key] || [];
+      table[key].push(item);
+      return table; 
+    }, {});
+  };
+
+  U.countDuplicateKeys = function(objectArray, objectKey) {
+    var dupes = 0;
+    var table = U.toHashTable(objectArray, function(item) {
+      return item[objectKey];
+    });
+
+    for (var hashKey in table) {
+      /* Remove one from the count because the original should not
+      be considered a duplicate. */
+      dupes+= Math.max(0, table[hashKey].length - 1);
+    }
+    return dupes;
+  };
+
+  /**
+  * @desc Given an array of objects, find the first object
+  * with all of the specified key/value pairs. 
+  *
+  * @param {Array} objectArray
+  * @param {Object} expectedKeyVals
+  */
+  U.firstWhere = function(objectArray, expectedKeyVals) {
+    var object, key, i, l;
+    for (i=0, l=objectArray.length; i<l; i++) {
+      object = objectArray[i];
+
+      // Return the object if it has all expected key/value pairs
+      for (key in expectedKeyVals) {
+        if (!object[key] || object[key] !== expectedKeyVals[key]) {
+          break;
+        }
+        return object;
+      }
+    }
+  };
+
   U.getCurrentURL = function() {
     return location.protocol + '//' + location.hostname + 
       (location.port ? ':'+location.port: '');

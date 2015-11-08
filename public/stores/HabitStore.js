@@ -44,30 +44,42 @@
     * properties within it that have changed. 
     */
     onTapSuccess: function(changedHabitProps) {
-      habits = habits.filter(function(habit) {
-        var progress = changedHabitProps.progress;
+      var progress = changedHabitProps.progress;
 
-        if (habit.habitID == changedHabitProps.habitID) {
-          habit.taps = changedHabitProps.taps;
-          habit.lastTap = changedHabitProps.lastTap;
-          habit.totalTaps = changedHabitProps.totalTaps;
-          habit.level = changedHabitProps.level;
-
-          /* Progress of zero on tap actually indicates a level up. This
-          may be counterintuitive if you're expecting 100. Please see
-          the habitMath module if you want a deep dive into 
-          why it works this way. */
-          if (progress === 0) {
-            PubSub.publish('messageAdded', 'You reached level ' + habit.level +
-              ' in "' + habit.content + '"!', 4000);
-          } else if (progress > 0) {
-            PubSub.publish('messageAdded', 'Level progress: ' + 
-              changedHabitProps.progress + '%', 4000);
-          } 
-        }
+      var habitUpdated = updateHabits({habitID: changedHabitProps.habitID},
+       function(habit) {
+        habit.taps = changedHabitProps.taps;
+        habit.lastTap = changedHabitProps.lastTap;
+        habit.totalTaps = changedHabitProps.totalTaps;
+        habit.level = changedHabitProps.level;
         return habit;
       });
-      PubSub.publish('habitListChanged', habits);
+
+      // updateHabits returns an array of habits that were updated 
+      if (habitUpdated.length !== 1) {
+        console.error('Exactly one client-side habit record should have ' +
+          'been affected by the update, but 0 or >1 updates occurred.');
+        PubSub.publish('messageAdded', 'Whoops...error updating' +
+        ' your progress. Please try again.', 2500);
+        return false;
+      }
+
+      habitUpdated = habitUpdated[0];
+
+      /* Progress of zero on tap actually indicates a level up. This
+      may be counterintuitive if you're expecting 100. Please see
+      the habitMath module if you want a deep dive into 
+      why it works this way. */
+      if (progress === 0) {
+        PubSub.publish('messageAdded', 'You reached level ' + 
+          habitUpdated.level + ' in "' + habitUpdated.content + 
+          '"!', 4000);
+      } else if (progress > 0) {
+        PubSub.publish('messageAdded', 'Level progress: ' + 
+          changedHabitProps.progress + '%', 4000);
+      } 
+
+      return true;
     },
 
     onTapFailure: function(err) {

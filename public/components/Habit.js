@@ -21,28 +21,31 @@
       this.setState({demoteWarned: true});
     },
 
+    componentWillUnmount: function() {
+      this.mounted = false; 
+    },
+
     componentDidMount: function() {
       var id = this.props.habit.habitID,
           habit = this.props.habit,
           _self = this;
 
+      this.mounted = true;
+
       /* toggledId is the id of the parent habit of the menu that 
       is going to appear */
       PubSub.subscribe('actionMenuWillAppear', function(toggledId) {
-        if (toggledId !== id) {
+        if (toggledId !== id && _self.mounted) {
           _self.setState({actionMenuHidden: true});
         }
       });
 
-      /*
-      PubSub.subscribe('habitCompleted', function(uniqueProperty, uniqueValue) {
-        if (habit[uniqueProperty] === uniqueValue) {
-          habit.lastTap = new Date().getTime();
+      setTimeout(function recursiveTimeCheck() {
+        _self.getTimeRemaining();
+        if (_self.mounted) {
+          setTimeout(recursiveTimeCheck, 1000);
         }
-      });
-      */
-
-      setInterval(this.getTimeRemaining, 1000);
+      }, 1000);
     },
 
     toggleActionMenu: function() {
@@ -51,7 +54,10 @@
       /* Instruct other menus to hide themselves because 
       this menu is going to open */
       PubSub.publish('actionMenuWillAppear', id);
-      this.setState({actionMenuHidden: !!!this.state.actionMenuHidden});
+
+      if (this.mounted) {
+        this.setState({actionMenuHidden: !!!this.state.actionMenuHidden});
+      }
     },
 
     getTimeRemaining: function() {
@@ -59,20 +65,19 @@
       var habit = this.props.habit;
 
       var msPassed = now - habit.lastTap,
-      msLeft = msPassed / habit.freq;
+          msLeft = msPassed / habit.freq;
 
-      var timeLeftAsPercentage = (100 - ((msPassed / habit.freq) * 100)).toFixed(3);
+      var timeLeftAsPercentage = Math.max(0, (100 - 
+        ((msPassed / habit.freq) * 100)).toFixed(3));
 
-      if (timeLeftAsPercentage < 0) {
-        // Demote the user by a level for each cycle that has passed. 
-        PubSub.publish('habitPastDue', habit.habitID, Math.floor(msPassed / habit.freq));
-        timeLeftAsPercentage = 0;
+      if (timeLeftAsPercentage >= 15 && timeLeftAsPercentage <= 30) {
+        // TODO: Add warning style to progress bar
       }
-
-      this.setState({'timeLeftAsPercentage': timeLeftAsPercentage});
-
-      if (timeLeftAsPercentage > 0 && timeLeftAsPercentage < 25 && !this.state.warned) {
-        this.setState({warned: true}); 
+      if (timeLeftAsPercentage > 0 && timeLeftAsPercentage < 15) {
+        // TODO: Add danger style to progress bar
+      }
+      if (this.mounted) {
+        this.setState({'timeLeftAsPercentage': timeLeftAsPercentage});
       }
     },
 
