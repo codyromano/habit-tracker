@@ -1,8 +1,6 @@
 (function(exports, React, PubSub, HabitActionMenu) {
   'use strict';
 
-  //test
-
   var Habit = exports.Habit = React.createClass({
     getInitialState: function() {
       return {

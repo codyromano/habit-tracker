@@ -38,17 +38,57 @@ ga('send', 'pageview');
     <div id="reactRoot" style="position:relative;" class="noselect"><img src="images/loading.gif" class="loading"/></div>
   </main>
 
+<script>
+(function() {
+  'use strict';
+
+  function reactComponentsRendered() {
+    return !document.querySelector('.app-wrapper .loading');
+  }
+
+  function linkHtml(text, href, target) {
+    target = target || "_self";
+
+    var style = "text-decoration:underline;color:blue;";
+    var link = "<a href=\"%href%\" target=\"%target%\" " +
+      "style=\"%style%\">%text%</a>";
+
+    return link.replace("%href%", href).replace("%target%", target).replace("%style%", style).replace("%text%", text);
+  }
+
+  function showLoadErrorHelp() {
+    var reactRoot = document.querySelector('#reactRoot');
+
+    reactRoot.innerHTML = '<div class="main-content">' +
+    '<p>I\'m sorry that your habits are taking a while ' +
+    'to load. If they don\'t appear soon, ' +
+    'try ' + linkHtml('reloading the page', '/') +
+    '. You can also ' + linkHtml('send me a bug report',
+      'https://github.com/codyromano/habit-tracker/issues/new', '_blank') +
+    '.</div>';
+  }
+
+  setTimeout(function() {
+    if (!reactComponentsRendered()) {
+      showLoadErrorHelp();
+    }
+  }, 6000);
+
+})();
+</script>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="all-non-jsx.js"></script>
 <script src="all-jsx.js"></script>
 
 <script>
-(function(U) {
+(function() {
   'use strict';
+
   // Initialize FastClick
   var attachFastClick = Origami.fastclick;
   attachFastClick(document.body);
-})(U);
+})();
 </script>
 
 </body>

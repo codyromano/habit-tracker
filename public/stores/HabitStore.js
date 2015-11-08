@@ -8,14 +8,54 @@
     profile = newProfile;
   });
 
+  var loadHabitsRetryTimer = null;
+
   /* This regular HTTP GET fires only once after the initial 
   user authentication. We rely on web sockets to manage subsequent updates. */
-  function loadHabitsFromServer() {
-    $.get("/api/habit/", function(response) {
-      response = JSON.parse(response);
-      let parsed = JSON.parse(response.content);
-      habits = parsed; 
-      PubSub.publish('habitListChanged', parsed);
+  function loadHabitsFromServer(retries) {
+    retries = retries || 1;
+
+    let maxRetries = 10; 
+
+    let retryInSeconds = Math.floor(Math.exp(retries, 1.5));
+    let retryTimerSet = false;
+
+    if (retries >= maxRetries) {
+      PubSub.publish("Sorry, I couldn't load your profile. Please reload the page.", 4000);
+      return false;
+    }
+
+    $.ajax({
+      url: "/api/habit/",
+      timeout: 8000,
+
+      error: function(req, errorType) {
+        var _self = this;
+
+        if (retryTimerSet) {
+          return;
+        }
+        retryTimerSet = true;
+        let message = "Retrying in " + retryInSeconds + " seconds.";
+
+        if (retries === 1) {
+          // Only explain this on the first retry or it becomes repetitive
+          message = "Sorry your profile is taking a while to load. " + message;
+        }
+
+        PubSub.publish("messageAdded", message, 3000);
+
+        clearTimeout(loadHabitsRetryTimer);
+        loadHabitsRetryTimer = setTimeout(
+          loadHabitsFromServer.bind(undefined, ++retries),
+          retryInSeconds * 1000);
+      },
+      success: function(response) {
+        response = JSON.parse(response);
+        let parsed = JSON.parse(response.content);
+        habits = parsed; 
+        PubSub.publish('habitListChanged', parsed);
+      }
     });
   }
 
