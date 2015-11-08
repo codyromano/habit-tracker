@@ -5,7 +5,8 @@
     getInitialState: function() {
       return {
         formHidden: true,
-        freqType: 'days'
+        freqType: 'days',
+        freq: 1
       };
     },
 
@@ -55,6 +56,10 @@
       title.addEventListener('keydown', this.submitOnEnter, false);
       freq.addEventListener('keydown', this.submitOnEnter, false);
 
+      freq.addEventListener('change', function() {
+        _self.setState({freq: this.value});
+      }, false);
+
       PubSub.subscribe('addHabitButtonClicked', function() {
         _self.expandFormButtonClicked();
       });
@@ -70,7 +75,8 @@
 
     resetForm: function() {
       this.setState({
-        title: ''
+        title: '',
+        freq: null
       });
       this.refs.form.getDOMNode().reset();
     },
@@ -95,8 +101,8 @@
         let extraNotice = extraRequired + ' more ' + 
           ((extraRequired > 1) ? 'points' : 'point');
 
-        PubSub.publish('messageAdded', 'You need a Life Score of ' + scoreRequired + ' (' + extraNotice + ') to add ' + 
-          'another habit.', 5000);
+        PubSub.publish('messageAdded', 'You need a total score of ' + scoreRequired + ' (' + extraNotice + ') to add ' + 
+          'another timer.', 5000);
         return false;
       }
       return true; 

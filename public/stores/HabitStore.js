@@ -202,8 +202,9 @@
       if (result.success === true) {
         habit.habitID = result.content.habitID; 
 
-        PubSub.publish('messageAdded', 'You have ' + time + ' ' + habit.freqType +
-        ' to ' + habit.content + '! Tap the progress bar when you\'re done.', 8000);
+        PubSub.publish('messageAdded', 'The clock is ticking! Tap the timer' +
+        ' and hit "Mark As Done" before the bar runs out.', 8000);
+
       } else {
         PubSub.publish('messageAdded', 'Sorry, I couldn\'t add your habit. '
           + 'Please try again.', 4000);

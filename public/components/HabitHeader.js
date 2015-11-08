@@ -16,7 +16,7 @@
       var link = '';
       if (this.props.user.name) {
         link = (<a href="#" ref="addHabitLink" 
-        className="main-header-link" onClick={this.habitButtonClicked}><span>Add Habit</span></a>);
+        className="main-header-link" onClick={this.habitButtonClicked}><span>Add Habit Timer</span></a>);
       }
       return link;
     },

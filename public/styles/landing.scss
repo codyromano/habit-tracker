@@ -36,6 +36,9 @@
 }
 
 @media (max-width: 600px) {
+  .landing-hero {
+    background-position: 75%;
+  }
   .landing-tagline {
     font-size: 3rem;
     padding-right: 0rem;
