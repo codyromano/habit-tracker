@@ -127,12 +127,6 @@ app.get('/api/habit/', ensureAPIAuthenticated, function(req, res) {
   habit.get(config, user, db, req, res); 
 });
 
-/* The following route is deprecated in favor of /api/habit/ */
-app.get('/api/habits/:id', ensureAPIAuthenticated, function(req, res) {
-  var user = activeUserStore.add(req.user.id, req.user);
-  habit.getAll(config, user, db, req, res); 
-});
-
 app.get('/api/user/', ensureAPIAuthenticated, function(req, res) {
   var user = activeUserStore.add(req.user.id, req.user);
   user.getProfile().then(function(user) {

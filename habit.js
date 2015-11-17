@@ -28,34 +28,6 @@ function printResponse(res, success, message, content) {
   res.send(JSON.stringify(result));
 }
 
-proto.getAll = function(config, user, db, req, res) {
-  /* This may seem strange if you're not familiar with the concepts of 
-  currying and partial application in JavaScript. Here's a good reference:
-  https://developer.mozilla.org/en-US/docs/Web/JavaScript/
-  Reference/Global_Objects/Function/bind
-  */
-  var onSuccess = printResponse.bind(undefined, res, true, 'Query OK'),
-    onFailure = printResponse.bind(undefined, res, false, 'Query failed');
-
-  user.getProfile().then(function(result) {
-    var userID = toString(result.userID); 
-
-    var params = {
-      AttributesToGet: ['content'],
-      TableName: config.AWS_HABITS_TABLE,
-      Key: {
-        userId: {"S" : userID},
-        title: {"S" : "all-user-habits"}
-      }
-    };
-    db.getItem(params, onResponse); 
-  });
-
-  function onResponse(err, data) {
-    (err) ? onFailure() : onSuccess(data.Item.content.S);
-  }
-};
-
 function toString(val) {
   return '' + val;
 }
