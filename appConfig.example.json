@@ -2,6 +2,8 @@
   "AWS_REGION": "us-west-2",
   "AWS_HABITS_TABLE": "habits",
   "AWS_HABITS_TABLE_V2" : "user-habits",
+  "AWS_HABITS_TABLE_V3" : "user-habits-v3",
+
   "AWS_USERS_TABLE": "users",
   "AWS_ACCESS_KEY_ID": "[YOUR KEY]",
   "AWS_SECRET_ACCESS_KEY": "[YOUR KEY]",
@@ -20,5 +22,5 @@
 
   "PASSPORT_SECRET" : "[YOUR SECRET]",
   "BASE_URL_DEV" : "http://localhost:8081/",
-  "BASE_URL_PRODUCTION" : "http://habits.elasticbeanstalk.com/"
+  "BASE_URL_PRODUCTION" : "http://159.203.245.224:8081/"
 }

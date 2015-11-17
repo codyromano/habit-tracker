@@ -130,14 +130,14 @@ function parseDynamoQueryItem(item) {
 
 proto.remove = function(config, user, db, req, res) {
 
-  var userID = user.getAttribute('userID');
+  var userID = toString(user.getAttribute('userID'));
   var userIONamespace = habitIO.getNamespace(userID);
 
   user.getProfile().then(function(profile) {
     var params = {
-      TableName: config.AWS_HABITS_TABLE_V2,
+      TableName: config.AWS_HABITS_TABLE_V3,
       Key: {  
-          ownerID: { N: toString(profile.userID) },
+          ownerID: { S: toString(profile.userID) },
           habitID: { S: toString(req.params.habitID)}
       }
     };
@@ -188,12 +188,12 @@ function prepareDynamoHabitItem(item) {
 proto.get = function(config, user, db, req, res) {
   user.getProfile().then(function(profile) {
     var params = {
-      TableName : config.AWS_HABITS_TABLE_V2,
+      TableName : config.AWS_HABITS_TABLE_V3,
       Select : "ALL_ATTRIBUTES",
       KeyConditions : {
         "ownerID" : {
           AttributeValueList: [
-            {"N" : toString(profile.userID)}
+            {"S" : toString(profile.userID)}
           ],
           ComparisonOperator: "EQ"
         }
@@ -218,9 +218,9 @@ proto.update = function(config, user, db, habitID, attributeUpdates, req, res) {
 
     // Build a query to give to Dynamo
     var params = {
-      TableName: config.AWS_HABITS_TABLE_V2,
+      TableName: config.AWS_HABITS_TABLE_V3,
       Key: { 
-        'ownerID' : { N: toString(profile.userID) },
+        'ownerID' : { S: toString(profile.userID) },
         'habitID' : { S: toString(habitID) }
       }
     };
@@ -248,7 +248,7 @@ proto.update = function(config, user, db, habitID, attributeUpdates, req, res) {
 };
 
 proto.addTap = function(config, user, db, habit, req, res) {
-  var userID = user.getAttribute('userID');
+  var userID = toString(user.getAttribute('userID'));
   var userIONamespace = habitIO.getNamespace(userID);
 
   var currentTime = new Date().getTime(), habitID;
@@ -327,7 +327,7 @@ proto.addTap = function(config, user, db, habit, req, res) {
 */
 proto.save = function(config, user, db, req, res) {
   var currentTime = new Date().getTime();
-  var userID = user.getAttribute('userID');
+  var userID = toString(user.getAttribute('userID'));
   var userIONamespace = habitIO.getNamespace(userID);
 
   /* How often (in milliseconds) the user must complete a habit */
@@ -371,7 +371,7 @@ proto.save = function(config, user, db, req, res) {
 
     var rawItemContent = {
       habitID: habitID,
-      ownerID: parseFloat(profile.userID),
+      ownerID: toString(profile.userID),
       content: req.body.content,
       timeLastUpdated: currentTime,
       timeCreated: currentTime,
@@ -386,7 +386,7 @@ proto.save = function(config, user, db, req, res) {
     var itemContent = getDynamoItem(rawItemContent);
 
     var newItem = {
-      TableName: config.AWS_HABITS_TABLE_V2,
+      TableName: config.AWS_HABITS_TABLE_V3,
       Item: itemContent
     };
 
