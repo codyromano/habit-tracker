@@ -6,7 +6,7 @@
       return {
         formHidden: true,
         freqType: 'days',
-        freq: 1
+        freq: 0
       };
     },
 
@@ -34,7 +34,7 @@
     formIsValid: function() {
       var title = this.state.title || '',
           freq = this.state.freq || 0;
-      return title[0] && !isNaN(freq) && freq > 0;
+      return title[0] && !isNaN(freq) && freq >= 1;
     },
 
     submitOnEnter: function(ev) {
