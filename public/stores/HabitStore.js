@@ -179,6 +179,27 @@
       data: {
         habit: habit
       }
+    }).then(function(response) {
+      var result, loginError, unknownError;
+      try {
+        result = JSON.parse(response); 
+        loginError = (result.success === false && 
+          result.message.indexOf('requires login') > -1);
+
+      } catch (e) {
+        unknownError = true;
+      }
+
+      if (loginError) {
+        PubSub.publish("messageAdded", "Your session has ended. Hang tight: " +
+          "I'll reload the page so you can login again.", 8000);
+        setTimeout(function() {
+          window.location.href = '/welcome';
+        }, 8000);
+      } else if (unknownError) {
+        PubSub.publish("messageAdded", "Aww, s**t. An error popped up that I " +
+          "wasn't expecting. Please try that again.", 8000);
+      }
     });
   }
 
