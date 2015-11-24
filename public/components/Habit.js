@@ -1,4 +1,4 @@
-(function(exports, React, PubSub, HabitActionMenu) {
+(function(exports, React, PubSub, HabitActionMenu, U) {
   'use strict';
 
   var Habit = exports.Habit = React.createClass({
@@ -10,7 +10,8 @@
         timeLeftAsPercentage: 1,
         actionMenuHidden: true,
         warned: false,
-        demoteWarned: false
+        demoteWarned: false,
+        dueDateDisplay: ''
       };
     },
 
@@ -58,9 +59,45 @@
       }
     },
 
+    getDueDateText: function(habit) {
+      var msInOneWeek = 1000 * 60 * 60 * 24 * 7;
+
+      if (habit.taps.length) {
+        let lastTap = habit.taps[habit.taps.length - 1];
+      } else {
+        let lastTap = habit.timeCreated;
+      }
+      let dueTime = habit.lastTap + habit.freq;
+      let dueDate = new Date(dueTime);
+      let timeDiff = dueTime - new Date().getTime();
+
+      if (timeDiff < 0) {
+        return 'Overdue';
+      }
+
+      let dueDateText = 'Due ' + U.getDayName(dueDate.getDay());
+
+      // Only display date if it's more than a week from now
+      if (dueTime - new Date().getTime() > msInOneWeek) {
+        dueDateText+= ', ' + U.getMonthName(dueDate.getMonth()) + 
+          ' ' + dueDate.getDate();
+
+      // Don't display specific time if the due date is >1 week in the future
+      } else {
+        dueDateText+= ' by ' + U.getFriendlyTime(dueDate);
+      }
+
+      return dueDateText;
+    },
+
     getTimeRemaining: function() {
       var now = new Date().getTime();
       var habit = this.props.habit;
+
+      if (this.mounted) {
+        this.setState({'dueDateDisplay': this.getDueDateText(habit)});
+      }
+
 
       var msPassed = now - habit.lastTap,
           msLeft = msPassed / habit.freq;
@@ -114,6 +151,7 @@
       return <div className={wrapperClasses} onClick={this.toggleActionMenu}>
 
         <div className="habit-bar-container">
+          <div className="dueDateDisplay">{this.state.dueDateDisplay}</div>
           <div className={progressClasses} style={progressStyle}></div>
 
           <div className="valign-wrapper habit-level col-3">
@@ -136,4 +174,4 @@
       </div>;
     }
   });
-})(window, React, PubSub, HabitActionMenu); 
+})(window, React, PubSub, HabitActionMenu, U); 

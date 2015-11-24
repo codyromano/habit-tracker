@@ -3,6 +3,34 @@
 
   var U = exports.U = {}; // Utilities
 
+  U.getMonthName = function(n) {
+    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
+      "July", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    return monthNames[n];
+  };
+
+  U.getDayName = function(n) {
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    return days[n];
+  };
+
+  U.getFriendlyTime = function(dateObj) {
+    var hours = dateObj.getHours(),
+        minutes = dateObj.getMinutes(),
+        suffix = (hours >= 12) ? 'pm' : 'am';
+    var result;
+
+    if (hours === 0) {
+      result = '12';
+    } else if (hours > 12) {
+      result = '' + (hours - 12); 
+    } else {
+      result = hours;
+    }
+    return result + suffix;
+  };
+
   /**
   * @desc Create a 1-dimensional hash table from an array
   * @param {Function} keyFn Used to derive a string key for each item.

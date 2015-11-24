@@ -3,10 +3,14 @@
   text-align: center;
   max-width: 50em;
   width: 100%;
-  margin: .75em 0;
+  margin: 2rem 0 .75em 0;
   cursor: pointer;
   border-radius: .25em;
   background-color: #fff;
+}
+
+.habit:first-of-type {
+  margin-top: 2.5rem;
 }
 
 .habit:last-of-type {
@@ -128,4 +132,12 @@ $trophy-icon-size: 1em;
   top: 0px;
   padding: .5em;
   border-bottom-right-radius: .5em;
+}
+
+.dueDateDisplay {
+  color: #666;
+  position: absolute;
+  top: -1.5rem;
+  font-size: .75rem;
+  right: 0;
 }
